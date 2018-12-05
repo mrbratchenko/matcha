@@ -6,6 +6,7 @@ const ObjectId = require("mongodb").ObjectID;
 // Load validation
 const validateProfileInput = require("../../validation/profile");
 const validateExperienceInput = require("../../validation/experience");
+const validateEducationInput = require("../../validation/education");
 
 // @route   GET api/profile/test
 // @desc    Test profile route
@@ -249,7 +250,7 @@ router.post(
             .then(profile => {
               if (profile) {
                 errors.handle = "That handle already exists";
-                res.status(400).json(errors);
+                return res.status(400).json(errors);
               }
               //   Save profile
               db.collection("profiles")
@@ -274,24 +275,105 @@ router.post(
       // Return errors with 400 status
       return res.status(400).json(errors);
     }
+    const newExp = {
+      _id: new ObjectId(),
+      title: req.body.title,
+      company: req.body.company,
+      location: req.body.location,
+      from: req.body.from,
+      to: req.body.to,
+      current: req.body.current,
+      description: req.body.description
+    };
     db.collection("profiles")
-      .findOne({ user: ObjectId(req.user._id) })
-      .then(profile => {
-        const newExp = {
-          title: req.body.title,
-          company: req.body.location,
-          location: req.body.location,
-          from: req.body.from,
-          to: req.body.to,
-          current: req.body.current,
-          description: req.body.desctription
-        };
-        console.log(profile);
-        // console.log(newExp);
-        // Add to exp array
-        db.collection("profiles").update({
-          $push: { experience: newExp }
-        });
+      .updateOne(
+        { user: ObjectId(req.user._id) },
+        { $push: { experience: newExp } }
+      )
+      .then(profile => res.json(profile));
+  }
+);
+
+// @route   POST api/profile/education
+// @desc    Add edu to profile
+// @access  Private
+router.post(
+  "/education",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validateEducationInput(req.body);
+    // Check validation
+    if (!isValid) {
+      // Return errors with 400 status
+      return res.status(400).json(errors);
+    }
+    const newEdu = {
+      _id: new ObjectId(),
+      school: req.body.school,
+      degree: req.body.degree,
+      fieldofstudy: req.body.fieldofstudy,
+      from: req.body.from,
+      to: req.body.to,
+      current: req.body.current,
+      description: req.body.description
+    };
+    db.collection("profiles")
+      .updateOne(
+        { user: ObjectId(req.user._id) },
+        { $push: { education: newEdu } }
+      )
+      .then(profile => res.json(profile));
+  }
+);
+
+// @route   DELETE api/profile/experience/:exp_id
+// @desc    Delete exp from profile
+// @access  Private
+router.delete(
+  "/experience/:exp_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Get remove index
+    db.collection("profiles")
+      .updateOne(
+        { "experience._id": ObjectId(req.params.exp_id) },
+        { $pull: { experience: { _id: ObjectId(req.params.exp_id) } } }
+      )
+      .then(profile => res.json(profile));
+  }
+);
+
+// @route   DELETE api/profile/education/:edu_id
+// @desc    Delete edu from profile
+// @access  Private
+router.delete(
+  "/education/:edu_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Get remove index
+    db.collection("profiles")
+      .updateOne(
+        { "education._id": ObjectId(req.params.edu_id) },
+        { $pull: { education: { _id: ObjectId(req.params.edu_id) } } }
+      )
+      .then(profile => res.json(profile));
+  }
+);
+
+// @route   DELETE api/profile/
+// @desc    Delete user and profile
+// @access  Private
+router.delete(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Get remove index
+    db.collection("profiles")
+      .removeOne({ user: ObjectId(req.user._id) })
+      .then(() => {
+        db.collection("users")
+          .removeOne({ _id: ObjectId(req.user._id) })
+          .then(() => res.json({ sucess: true }));
       });
   }
 );
