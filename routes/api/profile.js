@@ -16,25 +16,6 @@ router.get("/test", (req, res) => res.json({ msg: "Profile works!" }));
 // @route   GET api/profile
 // @desc    Test current users profile
 // @access  Private
-
-// router.get(
-//   "/",
-//   passport.authenticate("jwt", { session: false }),
-//   (req, res) => {
-//     const errors = {};
-//     db.collection("profiles")
-//       .findOne({ user: ObjectId(req.user._id) })
-//       .then(profile => {
-//         if (!profile) {
-//           errors.profile = "There is no profile for this user";
-//           return res.status(404).json(errors);
-//         }
-//         profile.user._id = "dslkflsd";
-//         res.json(profile);
-//       })
-//       .catch(err => res.status(404).json(err));
-//   }
-// );
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
