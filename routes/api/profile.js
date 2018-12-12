@@ -21,10 +21,10 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const errors = {};
-    if (!req.user_id.match(/^[0-9a-fA-F]{24}$/)) {
-      errors.profile = "There is no profile for this user";
-      return res.status(404).json(errors);
-    }
+    // if (!req.user_id.match(/^[0-9a-fA-F]{24}$/)) {
+    //   errors.profile = "There is no profile for this user";
+    //   return res.status(404).json(errors);
+    // }
     db.collection("profiles")
       .aggregate([
         {
@@ -135,10 +135,10 @@ router.get("/handle/:handle", (req, res) => {
 
 router.get("/user/:user_id", (req, res) => {
   const errors = {};
-  if (!req.params.user_id.match(/^[0-9a-fA-F]{24}$/)) {
-    errors.profile = "There is no profile for this user";
-    return res.status(404).json(errors);
-  }
+  // if (!req.params.user_id.match(/^[0-9a-fA-F]{24}$/)) {
+  //   errors.profile = "There is no profile for this user";
+  //   return res.status(404).json(errors);
+  // }
   db.collection("profiles")
     .aggregate([
       {
