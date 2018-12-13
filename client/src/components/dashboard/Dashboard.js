@@ -5,6 +5,8 @@ import { getCurrentProfile, deleteAccount } from "../../actions/profileActions";
 import Spinner from "../common/Spinner";
 import { Link } from "react-router-dom";
 import ProfileActions from "./ProfileActions";
+import Experience from "./Experience";
+import Education from "./Education";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -25,16 +27,23 @@ class Dashboard extends Component {
       dashboardContent = <Spinner />;
     } else {
       // Check if logged in user has a profile
-      console.log(profile.company);
       if (Object.keys(profile).length > 0) {
         dashboardContent = (
           <div>
             <p className="lead text-muted">
-              Welcome{" "}
-              <Link to={`/profile/${profile[0].handle}`}>{user.name}</Link>
+              Welcome <Link to={`/profile/${profile.handle}`}>{user.name}</Link>
             </p>
             <ProfileActions />
-            {/* TODO: exp and edu */}
+            <Experience
+              experience={
+                profile[0] ? profile[0].experience : profile.value.experience
+              }
+            />
+            <Education
+              education={
+                profile[0] ? profile[0].education : profile.value.education
+              }
+            />
             <div style={{ marginBottom: "60px" }} />
             <button
               onClick={this.onDeleteClick.bind(this)}
