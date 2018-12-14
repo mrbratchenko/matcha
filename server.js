@@ -4,6 +4,7 @@ const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
 const passport = require("passport");
+const path = require("path");
 
 const app = express();
 
@@ -23,28 +24,55 @@ MongoClient.connect(
   .then(client => {
     console.log("DB connected");
     db = client.db("matcha");
-    // db.createCollection("users", {
-    //   validator: {
-    //     $and: [
-    //       { name: { $type: "string" } },
-    //       { email: { $type: "string" } },
-    //       { password: { $type: "string" } }
-    //     ]
-    //   }
-    // });
-    // db.createCollection("profiles", {
-    //   validator: {
-    //     $and: [
-    //       { handle: { $type: "string" } },
-    //       { company: { $type: "string" } },
-    //       { website: { $type: "string" } },
-    //       { location: { $type: "string" } },
-    //       { status: { $type: "string" } },
-    //       { skills: { $type: "string" } },
-    //       { password: { $type: "string" } }
-    //     ]
-    //   }
-    // });
+    db.createCollection("posts", {
+      validator: {
+        $jsonSchema: {
+          bsonType: "object",
+          requere: [],
+          properties: {
+            user_id: {
+              bsonType: "object"
+            },
+            text: {
+              bsonType: "string"
+            },
+            name: {
+              bsonType: "string"
+            },
+            avatar: {
+              bsonType: "string"
+            },
+            likes: [
+              {
+                bsonType: "object"
+              }
+            ],
+            comments: [
+              {
+                user_id: {
+                  bsonType: "object"
+                },
+                text: {
+                  bsonType: "string"
+                },
+                name: {
+                  bsonType: "string"
+                },
+                avatar: {
+                  bsonType: "string"
+                },
+                date: {
+                  bsonType: "date"
+                }
+              }
+            ],
+            date: {
+              bsonType: "date"
+            }
+          }
+        }
+      }
+    });
   })
   .catch(err => console.log(err));
 
@@ -58,6 +86,15 @@ require("./config/passport")(passport);
 app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/posts", posts);
+
+//Server static assets if in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
 const port = process.env.PORT || 8100;
 

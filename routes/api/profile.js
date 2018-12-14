@@ -345,7 +345,7 @@ router.delete(
           returnOriginal: false
         }
       )
-      .then(profile => res.json(profile));
+      .then(profile => res.json(profile.value));
   }
 );
 
