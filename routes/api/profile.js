@@ -21,10 +21,10 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const errors = {};
-    if (!req.user_id.match(/^[0-9a-fA-F]{24}$/)) {
-      errors.profile = "There is no profile for this user";
-      return res.status(404).json(errors);
-    }
+    // if (!req.user_id.match(/^[0-9a-fA-F]{24}$/)) {
+    //   errors.profile = "There is no profile for this user";
+    //   return res.status(404).json(errors);
+    // }
     db.collection("profiles")
       .aggregate([
         {
@@ -135,10 +135,10 @@ router.get("/handle/:handle", (req, res) => {
 
 router.get("/user/:user_id", (req, res) => {
   const errors = {};
-  if (!req.params.user_id.match(/^[0-9a-fA-F]{24}$/)) {
-    errors.profile = "There is no profile for this user";
-    return res.status(404).json(errors);
-  }
+  // if (!req.params.user_id.match(/^[0-9a-fA-F]{24}$/)) {
+  //   errors.profile = "There is no profile for this user";
+  //   return res.status(404).json(errors);
+  // }
   db.collection("profiles")
     .aggregate([
       {
@@ -316,9 +316,13 @@ router.delete(
   (req, res) => {
     // Get remove index
     db.collection("profiles")
-      .updateOne(
+      .findOneAndUpdate(
         { "experience._id": ObjectId(req.params.exp_id) },
-        { $pull: { experience: { _id: ObjectId(req.params.exp_id) } } }
+        { $pull: { experience: { _id: ObjectId(req.params.exp_id) } } },
+        {
+          sort: { _id: 1 },
+          returnOriginal: false
+        }
       )
       .then(profile => res.json(profile));
   }
@@ -333,11 +337,15 @@ router.delete(
   (req, res) => {
     // Get remove index
     db.collection("profiles")
-      .updateOne(
+      .findOneAndUpdate(
         { "education._id": ObjectId(req.params.edu_id) },
-        { $pull: { education: { _id: ObjectId(req.params.edu_id) } } }
+        { $pull: { education: { _id: ObjectId(req.params.edu_id) } } },
+        {
+          sort: { _id: 1 },
+          returnOriginal: false
+        }
       )
-      .then(profile => res.json(profile));
+      .then(profile => res.json(profile.value));
   }
 );
 

@@ -103,9 +103,9 @@ MongoClient.connect(
               bsonType: "object"
             },
             comments: {
-              // user_id: {
-              //   bsonType: "object"
-              // },
+              user_id: {
+                bsonType: "object"
+              },
               bsonType: "object",
               properties: {
                 text: {

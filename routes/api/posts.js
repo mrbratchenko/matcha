@@ -17,9 +17,9 @@ router.get("/test", (req, res) => res.json({ msg: "Posts works!" }));
 router.get("/", (req, res) => {
   db.collection("posts")
     .find()
-    .sort({ date: -1 })
+    // .sort({ date: true })
     .toArray((err, posts) => {
-      if (posts.length === 0 || err) {
+      if (!posts) {
         res.status(404).json({ nopostfound: "No posts found" });
       }
       res.json(posts);
@@ -59,11 +59,22 @@ router.post(
       text: req.body.text,
       name: req.body.name,
       avatar: req.body.avatar,
-      user: req.user._id
+      user: req.user._id,
+      likes: [],
+      comments: [],
+      date: Date.now()
     };
+    // db.collection("posts")
+    //   .insertOne(newPost)
+    //   .then(post => res.json(post));
     db.collection("posts")
       .insertOne(newPost)
-      .then(post => res.json(post));
+      .then(
+        db
+          .collection("posts")
+          .findOne({ _id: { $eq: ObjectId(newPost._id) } })
+          .then(post => res.json(post))
+      );
   }
 );
 
@@ -206,8 +217,8 @@ router.post(
 
         // Add to comment array
         db.collection("posts")
-          .updateOne({}, { $push: { comments: newComment } })
-          .then(post => res.json(post));
+          .findOneAndUpdate({}, { $push: { comments: newComment } })
+          .then(post => res.json(post.value));
       })
       .catch(err => res.status(404).json({ nopostfound: "No post found" }));
   }
@@ -236,15 +247,19 @@ router.delete(
         }
         console.log(req.params.com_id);
         db.collection("posts")
-          .updateOne(
+          .findOneAndUpdate(
             { "comments._id": ObjectId(req.params.com_id) },
             {
               $pull: {
                 comments: { _id: ObjectId(req.params.com_id) }
               }
+            },
+            {
+              sort: { _id: 1 },
+              returnOriginal: false
             }
           )
-          .then(profile => res.json(profile));
+          .then(profile => res.json(profile.value));
       })
       .catch(err => res.status(404).json({ nopostfound: "No post found" }));
   }
