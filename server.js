@@ -4,9 +4,12 @@ const users = require("./routes/api/users");
 const profile = require("./routes/api/profile");
 const posts = require("./routes/api/posts");
 const passport = require("passport");
-const path = require("path");
+const socketIO = require("socket.io");
+const http = require("http");
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
 
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,11 +27,65 @@ MongoClient.connect(
   .then(client => {
     console.log("DB connected");
     db = client.db("matcha");
+    db.createCollection("users", {
+      validator: {
+        $jsonSchema: {
+          bsonType: "object",
+          required: ["name", "email", "password"],
+          additionalProperties: false,
+          properties: {
+            name: {
+              bsonType: "string",
+              pattern: "/[a-zA-z]/"
+            },
+            email: {
+              bsonType: "string"
+            },
+            password: {
+              bsonType: "string",
+              minLength: 6
+            }
+          }
+        }
+      }
+    });
+    db.createCollection("profiles", {
+      validator: {
+        $jsonSchema: {
+          bsonType: "object",
+          required: ["handle"],
+          properties: {
+            user_id: {
+              bsonType: "object"
+            },
+            handle: {
+              bsonType: "string"
+            },
+            gender: {
+              bsonType: "string"
+            },
+            sexPreferences: {
+              bsonType: "string"
+            },
+            biography: {
+              bsonType: "string"
+            },
+            interests: {
+              bsonType: "array"
+            },
+            pictures: {
+              bsonType: "array",
+              maxItems: 4
+            }
+          }
+        }
+      }
+    });
     db.createCollection("posts", {
       validator: {
         $jsonSchema: {
           bsonType: "object",
-          requere: [],
+          required: ["text"],
           properties: {
             user_id: {
               bsonType: "object"
@@ -42,16 +99,15 @@ MongoClient.connect(
             avatar: {
               bsonType: "string"
             },
-            likes: [
-              {
+            likes: {
+              bsonType: "object"
+            },
+            comments: {
+              user_id: {
                 bsonType: "object"
-              }
-            ],
-            comments: [
-              {
-                user_id: {
-                  bsonType: "object"
-                },
+              },
+              bsonType: "object",
+              properties: {
                 text: {
                   bsonType: "string"
                 },
@@ -62,12 +118,14 @@ MongoClient.connect(
                   bsonType: "string"
                 },
                 date: {
-                  bsonType: "date"
+                  bsonType: "date",
+                  default: Date.now
                 }
               }
-            ],
+            },
             date: {
-              bsonType: "date"
+              bsonType: "date",
+              default: Date.now
             }
           }
         }
@@ -87,14 +145,9 @@ app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/posts", posts);
 
-//Server static assets if in production
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
-}
+io.on("connection", () => {
+  console.log("IO connection");
+});
 
 const port = process.env.PORT || 8100;
 
