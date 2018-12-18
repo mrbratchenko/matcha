@@ -24,55 +24,55 @@ MongoClient.connect(
   .then(client => {
     console.log("DB connected");
     db = client.db("matcha");
-    db.createCollection("posts", {
-      validator: {
-        $jsonSchema: {
-          bsonType: "object",
-          requere: [],
-          properties: {
-            user_id: {
-              bsonType: "object"
-            },
-            text: {
-              bsonType: "string"
-            },
-            name: {
-              bsonType: "string"
-            },
-            avatar: {
-              bsonType: "string"
-            },
-            likes: [
-              {
-                bsonType: "object"
-              }
-            ],
-            comments: [
-              {
-                user_id: {
-                  bsonType: "object"
-                },
-                text: {
-                  bsonType: "string"
-                },
-                name: {
-                  bsonType: "string"
-                },
-                avatar: {
-                  bsonType: "string"
-                },
-                date: {
-                  bsonType: "date"
-                }
-              }
-            ],
-            date: {
-              bsonType: "date"
-            }
-          }
-        }
-      }
-    });
+    // db.createCollection("posts", {
+    //   validator: {
+    //     $jsonSchema: {
+    //       bsonType: "object",
+    //       requere: [],
+    //       properties: {
+    //         user_id: {
+    //           bsonType: "object"
+    //         },
+    //         text: {
+    //           bsonType: "string"
+    //         },
+    //         name: {
+    //           bsonType: "string"
+    //         },
+    //         avatar: {
+    //           bsonType: "string"
+    //         },
+    //         likes: [
+    //           {
+    //             bsonType: "object"
+    //           }
+    //         ],
+    //         comments: [
+    //           {
+    //             user_id: {
+    //               bsonType: "object"
+    //             },
+    //             text: {
+    //               bsonType: "string"
+    //             },
+    //             name: {
+    //               bsonType: "string"
+    //             },
+    //             avatar: {
+    //               bsonType: "string"
+    //             },
+    //             date: {
+    //               bsonType: "date"
+    //             }
+    //           }
+    //         ],
+    //         date: {
+    //           bsonType: "date"
+    //         }
+    //       }
+    //     }
+    //   }
+    // });
   })
   .catch(err => console.log(err));
 
