@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { registerUser } from '../../actions/authActions';
-import TextFieldGroup from '../common/TextFieldGroup';
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { registerUser } from "../../actions/authActions";
+import TextFieldGroup from "../common/TextFieldGroup";
 
 class Register extends Component {
   constructor() {
@@ -20,14 +20,14 @@ class Register extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentDidMount(){
-    if(this.props.auth.isAuthenticated) {
-      this.props.history.push('/dashboard');
+  componentDidMount() {
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
     }
   }
 
-  componentWillReceiveProps(nextProps){
-    if(nextProps.errors){
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
   }
@@ -53,12 +53,11 @@ class Register extends Component {
     //   .post("/api/users/register", newUser)
     //   .then(res => console.log(res.data))
     //   .catch(err => this.setState({ errors: err.response.data }));
-
   }
 
   render() {
     const { errors } = this.state; // same: const errors = this.state.errors
-    
+
     return (
       <div>
         <div className="register">
@@ -120,11 +119,14 @@ Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
-}
+};
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   auth: state.auth, //auth comes from reducers/index.js
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { registerUser })(withRouter(Register));
+export default connect(
+  mapStateToProps,
+  { registerUser }
+)(withRouter(Register));
