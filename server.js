@@ -43,10 +43,6 @@ app.use("/api/users", users);
 app.use("/api/profile", profile);
 app.use("/api/posts", posts);
 
-io.on("connection", () => {
-  console.log("IO connection");
-});
-
 const port = process.env.PORT || 8100;
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
