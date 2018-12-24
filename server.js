@@ -1,12 +1,13 @@
 const express = require("express");
+const app = express();
 const bodyParser = require("body-parser");
-const users = require("./routes/api/users");
-const profile = require("./routes/api/profile");
-const posts = require("./routes/api/posts");
+
 const passport = require("passport");
 const path = require("path");
 
-const app = express();
+const users = require("./routes/api/users");
+const profile = require("./routes/api/profile");
+const posts = require("./routes/api/posts");
 
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,55 +25,9 @@ MongoClient.connect(
   .then(client => {
     console.log("DB connected");
     db = client.db("matcha");
-    db.createCollection("posts", {
-      validator: {
-        $jsonSchema: {
-          bsonType: "object",
-          requere: [],
-          properties: {
-            user_id: {
-              bsonType: "object"
-            },
-            text: {
-              bsonType: "string"
-            },
-            name: {
-              bsonType: "string"
-            },
-            avatar: {
-              bsonType: "string"
-            },
-            likes: [
-              {
-                bsonType: "object"
-              }
-            ],
-            comments: [
-              {
-                user_id: {
-                  bsonType: "object"
-                },
-                text: {
-                  bsonType: "string"
-                },
-                name: {
-                  bsonType: "string"
-                },
-                avatar: {
-                  bsonType: "string"
-                },
-                date: {
-                  bsonType: "date"
-                }
-              }
-            ],
-            date: {
-              bsonType: "date"
-            }
-          }
-        }
-      }
-    });
+    require("./mongoSchemas/User");
+    require("./mongoSchemas/Profile");
+    require("./mongoSchemas/Post");
   })
   .catch(err => console.log(err));
 

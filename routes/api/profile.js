@@ -208,6 +208,8 @@ router.post(
     if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
     if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
     if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
+    profileFields.experience = [];
+    profileFields.education = [];
 
     // console.log(req.user._id);
     db.collection("profiles")

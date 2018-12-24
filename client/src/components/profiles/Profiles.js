@@ -49,9 +49,11 @@ Profiles.propTypes = {
 
 const mapStateToProps = state => ({
   profile: state.profile
+  // state.profile is a reducer from index.js  - combineReducers
 });
 
 export default connect(
   mapStateToProps,
   { getProfiles }
 )(Profiles);
+// Connect connects react with redux
