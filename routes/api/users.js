@@ -1,22 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const gravatar = require("gravatar");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+var nodemailer = require("nodemailer");
 
-// Load input validation
+// Validation
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
-
-// Load User model
-// const User = require("../../models/User");
-
-// @route   GET api/users/test
-// @desc    Test users route
-// @access  Public
-router.get("/test", (req, res) => res.json({ msg: "Users works!" }));
 
 // @route   POST api/users/register
 // @desc    Register user
@@ -30,31 +22,71 @@ router.post("/register", (req, res) => {
   }
 
   db.collection("users")
-    .findOne({ email: { $eq: req.body.email } })
+    .findOne({
+      $or: [
+        { email: { $eq: req.body.email } },
+        { username: { $eq: req.body.username } }
+      ]
+    })
     .then(user => {
-      if (user) {
-        errors.email = "Email already exists";
+      if (user && user.email === req.body.email) {
+        errors.email = "User with this email already exists";
+        return res.status(400).json(errors);
+      } else if (user && user.username === req.body.username) {
+        errors.username = "This username is already taken";
         return res.status(400).json(errors);
       } else {
-        const avatar = gravatar.url(req.body.email, {
-          s: "200", // size
-          r: "pg", // rating
-          d: "mm" // default
-        });
         const newUser = {
           name: req.body.name,
+          username: req.body.username,
           email: req.body.email,
-          avatar: avatar,
-          password: req.body.password
+          password: req.body.password,
+          verification: false,
+          verificationCode: req.body.email
         };
         bcrypt.genSalt(10, (err, salt) => {
+          if (err) throw err;
           bcrypt.hash(newUser.password, salt, (err, hash) => {
             if (err) throw err;
             newUser.password = hash;
+          });
+        });
+        bcrypt.genSalt(10, (err, salt) => {
+          if (err) throw err;
+          bcrypt.hash(newUser.verificationCode, salt, (err, hash) => {
+            if (err) throw err;
+            newUser.verificationCode = hash;
             db.collection("users")
               .insertOne(newUser)
               .then(user => res.json(user))
               .catch(err => console.log(err));
+
+            // Sending activation email
+            var transporter = nodemailer.createTransport({
+              service: "gmail",
+              auth: {
+                user: "agent.tony.white@gmail.com",
+                pass: "w3qE8yEv"
+              }
+            });
+            var mailOptions = {
+              from: "matches@gmail.com",
+              to: "agent.tony.white@gmail.com", //req.body.email,
+              subject: "Please activate your Matches account",
+              text:
+                "Please follow the link below to activate your account: " +
+                "http://localhost:3000/activation?email=" +
+                newUser.email +
+                "&code=" +
+                newUser.verificationCode
+            };
+            transporter.sendMail(mailOptions, function(error, info) {
+              if (error) {
+                console.log(error);
+              } else {
+                console.log("Email sent: " + info.response);
+              }
+            });
           });
         });
       }
@@ -85,17 +117,19 @@ router.post("/login", (req, res) => {
         errors.email = "User not found";
         return res.status(400).json(errors);
       }
-
       // check password
       bcrypt.compare(password, user.password).then(match => {
         if (match) {
+          if (user && user.verification === false) {
+            errors.verification =
+              "User email has not been confirmed. Please check your email.";
+            return res.status(400).json(errors);
+          }
           // user matched
           const payload = {
             id: user._id,
-            name: user.name,
-            avatar: user.avatar
+            name: user.name
           };
-
           // sign token
           jwt.sign(payload, keys.signKey, { expiresIn: 7200 }, (err, token) => {
             res.json({
@@ -112,9 +146,41 @@ router.post("/login", (req, res) => {
     .catch(err => console.log(err));
 });
 
-// @route   GET api/users/current
-// @desc    Return current user
-// @access  Private
+// @route   GET api/users/activation/:email/:code
+// @desc    Activate user's account with email code
+// @access  Public
+router.post("/activation", (req, res) => {
+  const email = req.body.email;
+  const code = req.body.code;
+
+  // console.log(email);
+  // console.log(code);
+  const errors = {};
+  // find user by email
+  db.collection("users")
+    .findOne({
+      $and: [{ email: { $eq: email } }, { verificationCode: { $eq: code } }]
+    })
+    .then(user => {
+      if (user && user.verification === true) {
+        errors.activation = "This account has already been activated.";
+        return res.status(400).json(errors);
+      } else if (user && user.verification === false) {
+        console.log(user);
+        db.collection("users")
+          .findOneAndUpdate({ email: email }, { $set: { verification: true } })
+          .then(user => res.json(user));
+      } else {
+        errors.activation = "Something went wrong. Please try again.";
+        return res.status(400).json(errors);
+      }
+    })
+    .catch(err => console.log(err));
+});
+
+// // @route   GET api/users/current
+// // @desc    Return current user
+// // @access  Private
 router.get(
   "/current",
   passport.authenticate("jwt", { session: false }),

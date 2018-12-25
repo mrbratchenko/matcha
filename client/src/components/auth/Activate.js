@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loginUser } from "../../actions/authActions";
+import { activateUser } from "../../actions/authActions";
 import TextFieldGroup from "../common/TextFieldGroup";
+import queryString from "query-string"; // for parsing req.query for backend
 
-class Login extends Component {
+class Activate extends Component {
   constructor() {
     super();
     this.state = {
@@ -21,6 +22,15 @@ class Login extends Component {
     if (this.props.auth.isAuthenticated) {
       this.props.history.push("/dashboard");
     }
+
+    const values = queryString.parse(this.props.location.search);
+    console.log(values);
+    const userData = {
+      email: values.email,
+      code: values.code
+    };
+
+    this.props.activateUser(userData);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -38,26 +48,19 @@ class Login extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-
-    const userData = {
-      email: this.state.email,
-      password: this.state.password
-    };
-
-    this.props.loginUser(userData);
   }
 
   render() {
     const { errors } = this.state;
-    console.log(this.state);
+
     return (
-      <div className="login">
+      <div className="activation">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Log In</h1>
+              <h1 className="display-4 text-center">Activation</h1>
               <p className="lead text-center">
-                Sign in to your DevConnector account
+                Your account has been activated
               </p>
               <form onSubmit={this.onSubmit}>
                 <TextFieldGroup
@@ -75,7 +78,7 @@ class Login extends Component {
                   type="password"
                   value={this.state.password}
                   onChange={this.onChange}
-                  error={errors.password || errors.verification}
+                  error={errors.activation}
                 />
 
                 <input type="submit" className="btn btn-info btn-block mt-4" />
@@ -88,8 +91,8 @@ class Login extends Component {
   }
 }
 
-Login.propTypes = {
-  loginUser: PropTypes.func.isRequired,
+Activate.propTypes = {
+  activateUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -101,5 +104,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { loginUser }
-)(Login);
+  { activateUser }
+)(Activate);

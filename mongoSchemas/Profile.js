@@ -36,7 +36,7 @@ module.exports = db.createCollection("profiles", {
     $jsonSchema: {
       bsonType: "object",
       required: ["handle"],
-      additionalProperties: false,
+      // additionalProperties: false,
       properties: {
         _id: {
           bsonType: "objectId"
@@ -44,24 +44,21 @@ module.exports = db.createCollection("profiles", {
         user: {
           bsonType: "objectId"
         },
-        handle: {
-          bsonType: "string"
-        },
         status: {
           bsonType: "string"
         },
-        skills: {
-          bsonType: "string"
-        },
-        social: {
-          bsonType: "string"
-        },
-        experience: {
-          bsonType: "array"
-        },
-        education: {
-          bsonType: "array"
-        },
+        // skills: {
+        //   bsonType: "string"
+        // },
+        // social: {
+        //   bsonType: "string"
+        // },
+        // experience: {
+        //   bsonType: "array"
+        // },
+        // education: {
+        //   bsonType: "array"
+        // },
         website: {
           bsonType: "string"
         },

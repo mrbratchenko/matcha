@@ -10,6 +10,7 @@ class Register extends Component {
     super();
     this.state = {
       name: "",
+      username: "",
       email: "",
       password: "",
       password2: "",
@@ -41,6 +42,7 @@ class Register extends Component {
 
     const newUser = {
       name: this.state.name,
+      username: this.state.username,
       email: this.state.email,
       password: this.state.password,
       password2: this.state.password2
@@ -77,13 +79,19 @@ class Register extends Component {
                     error={errors.name}
                   />
                   <TextFieldGroup
+                    placeholder="Username"
+                    name="username"
+                    value={this.state.username}
+                    onChange={this.onChange}
+                    error={errors.username}
+                  />
+                  <TextFieldGroup
                     placeholder="Email"
                     name="email"
                     type="email"
                     value={this.state.email}
                     onChange={this.onChange}
                     error={errors.email}
-                    info="This site uses Gravatar for a profile image"
                   />
                   <TextFieldGroup
                     placeholder="Password"

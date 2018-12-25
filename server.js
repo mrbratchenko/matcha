@@ -26,6 +26,8 @@ MongoClient.connect(
   .then(client => {
     console.log("DB connected");
     db = client.db("matcha");
+  })
+  .then(() => {
     require("./mongoSchemas/User");
     require("./mongoSchemas/Profile");
     require("./mongoSchemas/Post");

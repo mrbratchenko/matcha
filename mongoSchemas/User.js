@@ -33,6 +33,9 @@ module.exports = db.createCollection("users", {
         name: {
           bsonType: "string"
         },
+        username: {
+          bsonType: "string"
+        },
         email: {
           bsonType: "string"
         },
@@ -40,8 +43,11 @@ module.exports = db.createCollection("users", {
           bsonType: "string",
           minLength: 6
         },
-        avatar: {
-          type: "string"
+        verification: {
+          bsonType: "bool"
+        },
+        verificationCode: {
+          bsonType: "string"
         }
       }
     }
