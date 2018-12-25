@@ -20,10 +20,11 @@ class Landing extends Component {
                 <h1 className="display-3 mb-4">Welcome to Matches!</h1>
                 <p className="lead">
                   {" "}
-                  Create a dating profile and find your match in no time
+                  Create a dating profile and find your match in the blink of an
+                  eye
                 </p>
                 <hr />
-                <Link to="/register" className="btn btn-lg btn-info mr-2">
+                <Link to="/register" className="btn btn-lg btn-danger mr-2">
                   Sign Up
                 </Link>
                 <Link to="/login" className="btn btn-lg btn-light">
