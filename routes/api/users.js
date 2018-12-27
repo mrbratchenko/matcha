@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken"); // generate user token
 const keys = require("../../config/keys");
-const passport = require("passport");
+const passport = require("passport"); // verify user's token
 var nodemailer = require("nodemailer");
 
 // Validation
@@ -44,23 +44,16 @@ router.post("/register", (req, res) => {
           verification: false,
           verificationCode: req.body.email
         };
-        bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.verificationCode, 10, (err, hash) => {
           if (err) throw err;
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
+          newUser.verificationCode = hash;
+          bcrypt.hash(newUser.password, 10, (err, hash) => {
             if (err) throw err;
             newUser.password = hash;
-          });
-        });
-        bcrypt.genSalt(10, (err, salt) => {
-          if (err) throw err;
-          bcrypt.hash(newUser.verificationCode, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.verificationCode = hash;
             db.collection("users")
               .insertOne(newUser)
               .then(user => res.json(user))
               .catch(err => console.log(err));
-
             // Sending activation email
             var transporter = nodemailer.createTransport({
               service: "gmail",
@@ -74,11 +67,15 @@ router.post("/register", (req, res) => {
               to: "agent.tony.white@gmail.com", //req.body.email,
               subject: "Please activate your Matches account",
               text:
-                "Please follow the link below to activate your account: " +
+                "Hello " +
+                newUser.name +
+                "!\n" +
+                "Please follow the link below to activate your account:\n" +
                 "http://localhost:3000/activation?email=" +
                 newUser.email +
                 "&code=" +
-                newUser.verificationCode
+                newUser.verificationCode +
+                "\n- Matcha team.  "
             };
             transporter.sendMail(mailOptions, function(error, info) {
               if (error) {
@@ -128,10 +125,11 @@ router.post("/login", (req, res) => {
           // user matched
           const payload = {
             id: user._id,
-            name: user.name
+            name: user.name,
+            username: user.username
           };
           // sign token
-          jwt.sign(payload, keys.signKey, { expiresIn: 7200 }, (err, token) => {
+          jwt.sign(payload, keys.jwtKey, { expiresIn: 7200 }, (err, token) => {
             res.json({
               success: true,
               token: "Bearer " + token
@@ -170,8 +168,10 @@ router.post("/activation", (req, res) => {
         db.collection("users")
           .findOneAndUpdate({ email: email }, { $set: { verification: true } })
           .then(user => res.json(user));
+        errors.emailSent =
+          "An account activation email has been sent to your address.";
       } else {
-        errors.activation = "Something went wrong. Please try again.";
+        errors.activation = "Something went wrong. Please try again later.";
         return res.status(400).json(errors);
       }
     })

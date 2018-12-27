@@ -38,7 +38,7 @@ class Register extends Component {
   }
 
   onSubmit(e) {
-    e.preventDefault();
+    // e.preventDefault();
 
     const newUser = {
       name: this.state.name,
@@ -49,6 +49,18 @@ class Register extends Component {
     };
 
     this.props.registerUser(newUser, this.props.history);
+    if (
+      window.alert(
+        "Success! Please check your email for an account activation link."
+      )
+    );
+    // this.setState({
+    //   name: "",
+    //   username: "",
+    //   email: "",
+    //   password: "",
+    //   password2: ""
+    // });
     //second parameter to redirect within action , not component
 
     // axios

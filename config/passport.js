@@ -5,13 +5,14 @@ const ObjectId = require("mongodb").ObjectID;
 
 const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = keys.signKey;
+opts.secretOrKey = keys.jwtKey;
 
 module.exports = passport => {
   passport.use(
-    new JwtStrategy(opts, (jwt_payload, done) => {
+    new JwtStrategy(opts, (payload, done) => {
+      console.log(payload);
       db.collection("users")
-        .findOne({ _id: ObjectId(jwt_payload.id) })
+        .findOne({ _id: ObjectId(payload.id) })
         .then(user => {
           // check for user
           if (user) {

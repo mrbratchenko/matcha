@@ -8,7 +8,7 @@ import { GET_ERRORS, SET_CURRENT_USER } from "./types";
 export const registerUser = (userData, history) => dispatch => {
   axios
     .post("/api/users/register", userData)
-    .then(res => history.push("/login"))
+    // .then(res => history.push("/login"))
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
@@ -19,15 +19,12 @@ export const registerUser = (userData, history) => dispatch => {
 
 // Activate user
 export const activateUser = (userData, history) => dispatch => {
-  axios
-    .post("/api/users/activation", userData)
-    // .then(res => history.push("/login"))
-    .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
-    );
+  axios.post("/api/users/activation", userData).catch(err =>
+    dispatch({
+      type: GET_ERRORS,
+      payload: err.response.data
+    })
+  );
 };
 
 // Login -get user token

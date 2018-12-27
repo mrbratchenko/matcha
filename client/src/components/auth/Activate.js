@@ -2,27 +2,18 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { activateUser } from "../../actions/authActions";
-import TextFieldGroup from "../common/TextFieldGroup";
 import queryString from "query-string"; // for parsing req.query for backend
+import { Link } from "react-router-dom";
 
 class Activate extends Component {
   constructor() {
     super();
     this.state = {
-      email: "",
-      password: "",
       errors: {}
     };
-
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
   }
 
   componentDidMount() {
-    if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
-    }
-
     const values = queryString.parse(this.props.location.search);
     console.log(values);
     const userData = {
@@ -34,20 +25,9 @@ class Activate extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
-    }
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
-  }
-
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
-
-  onSubmit(e) {
-    e.preventDefault();
   }
 
   render() {
@@ -59,30 +39,18 @@ class Activate extends Component {
           <div className="row">
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Activation</h1>
-              <p className="lead text-center">
-                Your account has been activated
-              </p>
-              <form onSubmit={this.onSubmit}>
-                <TextFieldGroup
-                  placeholder="Email Address"
-                  name="email"
-                  type="email"
-                  value={this.state.email}
-                  onChange={this.onChange}
-                  error={errors.email}
-                />
-
-                <TextFieldGroup
-                  placeholder="Password"
-                  name="password"
-                  type="password"
-                  value={this.state.password}
-                  onChange={this.onChange}
-                  error={errors.activation}
-                />
-
-                <input type="submit" className="btn btn-info btn-block mt-4" />
-              </form>
+              {errors.activation ? (
+                <div className="col-form-label text-danger">
+                  {errors.activation}
+                </div>
+              ) : (
+                <div className="col-form-label text-success">
+                  Your account has been activated.
+                </div>
+              )}
+              <Link to="/login" className="btn btn-lg btn-info mr-2">
+                Proceed to logging in
+              </Link>
             </div>
           </div>
         </div>
@@ -92,13 +60,10 @@ class Activate extends Component {
 }
 
 Activate.propTypes = {
-  activateUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth,
   errors: state.errors
 });
 
