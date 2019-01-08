@@ -6,14 +6,14 @@ import TextFieldGroup from "../common/TextFieldGroup";
 import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import InputGroup from "../common/InputGroup";
 import SelectListGroup from "../common/SelectListGroup";
-import { createProfile } from "../../actions/profileActions";
+import { createProfile, getCurrentProfile } from "../../actions/profileActions";
 
 class CreateProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       displaySocialInputs: false,
-      handle: "",
+      username: "",
       company: "",
       website: "",
       location: "",
@@ -33,9 +33,22 @@ class CreateProfile extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  componentDidMount() {
+    this.props.getCurrentProfile();
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
+    }
+
+    if (nextProps.profile.profile) {
+      const profile = nextProps.profile.profile[0];
+      console.log(profile);
+
+      this.setState({
+        username: profile.username
+      });
     }
   }
 
@@ -43,7 +56,7 @@ class CreateProfile extends Component {
     e.preventDefault();
 
     const profileData = {
-      handle: this.state.handle,
+      username: this.state.username,
       company: this.state.company,
       website: this.state.website,
       location: this.state.location,
@@ -142,12 +155,12 @@ class CreateProfile extends Component {
               <small className="d-block pb-3">* = required fields</small>
               <form onSubmit={this.onSubmit}>
                 <TextFieldGroup
-                  placeholder="* Profile Handle"
-                  name="handle"
-                  value={this.state.handle}
+                  placeholder="* Profile Username"
+                  name="username"
+                  value={this.state.username}
                   onChange={this.onChange}
-                  error={errors.handle}
-                  info="A unique handle for your profile URL"
+                  error={errors.username}
+                  info="A unique username for your profile URL"
                 />
                 <SelectListGroup
                   placeholder="Status"
@@ -238,6 +251,7 @@ class CreateProfile extends Component {
 
 CreateProfile.propTypes = {
   profile: PropTypes.object.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired
 };
 
@@ -248,5 +262,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { createProfile }
+  { createProfile, getCurrentProfile }
 )(withRouter(CreateProfile));

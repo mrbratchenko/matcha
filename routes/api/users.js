@@ -44,6 +44,7 @@ router.post("/register", (req, res) => {
           verification: false,
           verificationCode: req.body.email
         };
+
         bcrypt.hash(newUser.verificationCode, 10, (err, hash) => {
           if (err) throw err;
           newUser.verificationCode = hash;
@@ -52,8 +53,22 @@ router.post("/register", (req, res) => {
             newUser.password = hash;
             db.collection("users")
               .insertOne(newUser)
-              .then(user => res.json(user))
+              .then(user => {
+                res.json(user);
+
+                const newUserProfile = {
+                  name: req.body.name,
+                  email: req.body.email,
+                  username: req.body.username,
+                  user: user.insertedId
+                };
+                // Create profile with only username
+                db.collection("profiles")
+                  .insertOne(newUserProfile)
+                  .catch(err => console.log(err));
+              })
               .catch(err => console.log(err));
+
             // Sending activation email
             var transporter = nodemailer.createTransport({
               service: "gmail",

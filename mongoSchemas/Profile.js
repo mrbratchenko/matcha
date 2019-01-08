@@ -1,80 +1,80 @@
+// // module.exports = db.createCollection("profiles", {
+// //   validator: {
+// //     $jsonSchema: {
+// //       bsonType: "object",
+// //       required: ["username"],
+// //       properties: {
+// //         user_id: {
+// //           bsonType: "object"
+// //         },
+// //         username: {
+// //           bsonType: "string"
+// //         },
+// //         gender: {
+// //           bsonType: "string"
+// //         },
+// //         sexPreferences: {
+// //           bsonType: "string"
+// //         },
+// //         biography: {
+// //           bsonType: "string"
+// //         },
+// //         interests: {
+// //           bsonType: "array"
+// //         },
+// //         pictures: {
+// //           bsonType: "array",
+// //           maxItems: 4
+// //         }
+// //       }
+// //     }
+// //   }
+// // });
+
 // module.exports = db.createCollection("profiles", {
 //   validator: {
 //     $jsonSchema: {
 //       bsonType: "object",
-//       required: ["handle"],
+//       required: ["username"],
+//       // additionalProperties: false,
 //       properties: {
-//         user_id: {
-//           bsonType: "object"
+//         _id: {
+//           bsonType: "objectId"
 //         },
-//         handle: {
+//         user: {
+//           bsonType: "objectId"
+//         },
+//         status: {
 //           bsonType: "string"
 //         },
-//         gender: {
+//         // skills: {
+//         //   bsonType: "string"
+//         // },
+//         // social: {
+//         //   bsonType: "string"
+//         // },
+//         // experience: {
+//         //   bsonType: "array"
+//         // },
+//         // education: {
+//         //   bsonType: "array"
+//         // },
+//         website: {
 //           bsonType: "string"
 //         },
-//         sexPreferences: {
+//         bio: {
 //           bsonType: "string"
 //         },
-//         biography: {
+//         company: {
 //           bsonType: "string"
 //         },
-//         interests: {
-//           bsonType: "array"
+//         githubusername: {
+//           bsonType: "string"
 //         },
-//         pictures: {
-//           bsonType: "array",
-//           maxItems: 4
+//         location: {
+//           bsonType: "string"
 //         }
 //       }
 //     }
 //   }
 // });
-
-module.exports = db.createCollection("profiles", {
-  validator: {
-    $jsonSchema: {
-      bsonType: "object",
-      required: ["handle"],
-      // additionalProperties: false,
-      properties: {
-        _id: {
-          bsonType: "objectId"
-        },
-        user: {
-          bsonType: "objectId"
-        },
-        status: {
-          bsonType: "string"
-        },
-        // skills: {
-        //   bsonType: "string"
-        // },
-        // social: {
-        //   bsonType: "string"
-        // },
-        // experience: {
-        //   bsonType: "array"
-        // },
-        // education: {
-        //   bsonType: "array"
-        // },
-        website: {
-          bsonType: "string"
-        },
-        bio: {
-          bsonType: "string"
-        },
-        company: {
-          bsonType: "string"
-        },
-        githubusername: {
-          bsonType: "string"
-        },
-        location: {
-          bsonType: "string"
-        }
-      }
-    }
-  }
-});

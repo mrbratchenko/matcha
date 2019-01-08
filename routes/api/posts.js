@@ -235,7 +235,6 @@ router.delete(
       .findOne({ _id: ObjectId(req.params.id) })
       .then(post => {
         // Check to see if the comment exists
-        console.log;
         if (
           post.comments.filter(
             comment => comment._id.toString() === req.params.com_id.toString()

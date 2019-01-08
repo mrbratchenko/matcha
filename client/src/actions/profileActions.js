@@ -28,12 +28,12 @@ export const getCurrentProfile = () => dispatch => {
     );
 };
 
-// Get profile by handle
-export const getProfileByHandle = handle => dispatch => {
-  // console.log(handle);
+// Get profile by username
+export const getProfileByUsername = username => dispatch => {
+  // console.log(username);
   dispatch(setProfileLoading());
   axios
-    .get(`/api/profile/handle/${handle}`)
+    .get(`/api/profile/username/${username}`)
     .then(res =>
       dispatch({
         type: GET_PROFILE,

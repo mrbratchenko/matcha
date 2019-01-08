@@ -49,7 +49,7 @@ class Login extends Component {
 
   render() {
     const { errors } = this.state;
-    console.log(this.state);
+
     return (
       <div className="login">
         <div className="container">
