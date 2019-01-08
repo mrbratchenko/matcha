@@ -8,11 +8,6 @@ const validateProfileInput = require("../../validation/profile");
 const validateExperienceInput = require("../../validation/experience");
 const validateEducationInput = require("../../validation/education");
 
-// @route   GET api/profile/test
-// @desc    Test profile route
-// @access  Public
-router.get("/test", (req, res) => res.json({ msg: "Profile works!" }));
-
 // @route   GET api/profile
 // @desc    Test current users profile
 // @access  Private
@@ -92,15 +87,15 @@ router.get("/all", (req, res) => {
     });
 });
 
-// @route   GET api/profile/handle/:handle
-// @desc    Get profile by handle
+// @route   GET api/profile/username/:username
+// @desc    Get profile by username
 // @access  Public
-router.get("/handle/:handle", (req, res) => {
+router.get("/username/:username", (req, res) => {
   var errors = {};
   db.collection("profiles")
     .aggregate([
       {
-        $match: { handle: req.params.handle }
+        $match: { username: req.params.username }
       },
       {
         $lookup: {
@@ -189,7 +184,13 @@ router.post(
     // Get fields
     const profileFields = {};
     profileFields.user = req.user._id;
-    if (req.body.handle) profileFields.handle = req.body.handle;
+
+    db.collection("users")
+      .findOne({ _id: ObjectId(req.user._id) })
+      .then(user => {
+        profileFields.username = user.username;
+      });
+    // profileFields.username = "req.body.username";
     if (req.body.company) profileFields.company = req.body.company;
     if (req.body.website) profileFields.website = req.body.website;
     if (req.body.location) profileFields.location = req.body.location;
@@ -227,12 +228,12 @@ router.post(
             .then(profile => res.json(profile));
         } else {
           // Create
-          // Check if handle exists
+          // Check if username exists
           db.collection("profiles")
-            .findOne({ handle: profileFields.handle })
+            .findOne({ username: profileFields.username })
             .then(profile => {
               if (profile) {
-                errors.handle = "That handle already exists";
+                errors.username = "That username already exists";
                 return res.status(400).json(errors);
               }
               //   Save profile

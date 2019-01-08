@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 import TextFieldGroup from "../common/TextFieldGroup";
+import { Link } from "react-router-dom";
 
 class Login extends Component {
   constructor() {
@@ -49,7 +50,6 @@ class Login extends Component {
 
   render() {
     const { errors } = this.state;
-    console.log(this.state);
     return (
       <div className="login">
         <div className="container">
@@ -68,7 +68,6 @@ class Login extends Component {
                   onChange={this.onChange}
                   error={errors.email}
                 />
-
                 <TextFieldGroup
                   placeholder="Password"
                   name="password"
@@ -77,8 +76,11 @@ class Login extends Component {
                   onChange={this.onChange}
                   error={errors.password || errors.verification}
                 />
-
-                <input type="submit" className="btn btn-info btn-block mt-4" />
+                <Link to="/reset-password">Forgot your password?</Link>
+                <input
+                  type="submit"
+                  className="btn btn-danger btn-block mt-4"
+                />
               </form>
             </div>
           </div>

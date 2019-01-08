@@ -15,7 +15,7 @@ class Activate extends Component {
 
   componentDidMount() {
     const values = queryString.parse(this.props.location.search);
-    console.log(values);
+    // console.log(values);
     const userData = {
       email: values.email,
       code: values.code
@@ -48,7 +48,7 @@ class Activate extends Component {
                   Your account has been activated.
                 </div>
               )}
-              <Link to="/login" className="btn btn-lg btn-info mr-2">
+              <Link to="/login" className="btn btn-block btn-danger mr-2">
                 Proceed to logging in
               </Link>
             </div>

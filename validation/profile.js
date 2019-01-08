@@ -4,17 +4,17 @@ const isURL = require("./is-url");
 module.exports = function validateProfileInput(data) {
   let errors = {};
 
-  data.handle = !isEmpty(data.handle) ? data.handle : "";
+  // data.username = !isEmpty(data.username) ? data.username : "";
   data.status = !isEmpty(data.status) ? data.status : "";
   data.skills = !isEmpty(data.skills) ? data.skills : "";
 
-  if (data.handle.length < 2 || data.handle.length > 40) {
-    errors.handle = "Handle needs to be between and 4 characters";
-  }
+  // if (data.username.length < 2 || data.username.length > 40) {
+  //   errors.username = "Username needs to be between and 4 characters";
+  // }
 
-  if (data.handle === "") {
-    errors.handle = "Profile handle is required";
-  }
+  // if (data.username === "") {
+  //   errors.username = "Profile username is required";
+  // }
 
   if (data.status === "") {
     errors.status = "Status field is required";

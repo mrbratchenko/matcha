@@ -9,6 +9,9 @@ import {
   SET_CURRENT_USER
 } from "./types";
 
+// Get username
+export const getUsername = "passed username";
+
 // Get current profile
 export const getCurrentProfile = () => dispatch => {
   dispatch(setProfileLoading());
@@ -28,12 +31,12 @@ export const getCurrentProfile = () => dispatch => {
     );
 };
 
-// Get profile by handle
-export const getProfileByHandle = handle => dispatch => {
-  // console.log(handle);
+// Get profile by username
+export const getProfileByUsername = username => dispatch => {
+  // console.log(username);
   dispatch(setProfileLoading());
   axios
-    .get(`/api/profile/handle/${handle}`)
+    .get(`/api/profile/username/${username}`)
     .then(res =>
       dispatch({
         type: GET_PROFILE,

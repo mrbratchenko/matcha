@@ -2,6 +2,7 @@ const isEmpty = require("./is-empty");
 const isEmail = require("./is-email");
 
 module.exports = function validateRegisterInput(data) {
+  // test are run on the client side
   let errors = {};
 
   data.name = !isEmpty(data.name) ? data.name : "";
