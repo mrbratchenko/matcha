@@ -14,17 +14,14 @@ class CreateProfile extends Component {
     super(props);
     this.state = {
       displaySocialInputs: false,
-      company: "",
-      website: "",
+      name: "",
+      username: "",
+      email: "",
       location: "",
       status: "",
       skills: "",
-      githubusername: "",
       bio: "",
       twitter: "",
-      facebook: "",
-      linkedin: "",
-      youtube: "",
       instagram: "",
       errors: {}
     };
@@ -45,28 +42,19 @@ class CreateProfile extends Component {
     if (nextProps.profile.profile) {
       const profile = nextProps.profile.profile[0];
       // Bring skills array back to CSV
+      // console.log(profile);
       const skillsCSV = profile.skills.join(",");
+      profile.name = !isEmpty(profile.name) ? profile.name : "";
+      profile.username = !isEmpty(profile.username) ? profile.username : "";
+      profile.email = !isEmpty(profile.email) ? profile.email : "";
 
       // If profile doesn't exist, make empty string
-      profile.company = !isEmpty(profile.company) ? profile.company : "";
-      profile.website = !isEmpty(profile.website) ? profile.website : "";
       profile.location = !isEmpty(profile.location) ? profile.location : "";
-      profile.githubusername = !isEmpty(profile.githubusername)
-        ? profile.githubusername
-        : "";
       profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
+
       profile.social = !isEmpty(profile.social) ? profile.social : {};
-      profile.twitter = !isEmpty(profile.social.twitter)
-        ? profile.social.twitter
-        : "";
       profile.facebook = !isEmpty(profile.social.facebook)
         ? profile.social.facebook
-        : "";
-      profile.linkedin = !isEmpty(profile.social.linkedin)
-        ? profile.social.linkedin
-        : "";
-      profile.youtube = !isEmpty(profile.social.youtube)
-        ? profile.social.youtube
         : "";
       profile.instagram = !isEmpty(profile.social.instagram)
         ? profile.social.instagram
@@ -74,39 +62,33 @@ class CreateProfile extends Component {
 
       // Set component fields state
       this.setState({
-        company: profile.company,
-        website: profile.website,
+        name: profile.name,
+        email: profile.email, //////////////////////
+        username: profile.username,
         location: profile.location,
         status: profile.status,
         skills: skillsCSV,
-        githubusername: profile.githubusername,
         bio: profile.bio,
-        twitter: profile.twitter,
         facebook: profile.facebook,
-        linkedin: profile.linkedin,
-        youtube: profile.youtube,
         instagram: profile.instagram
       });
     }
   }
 
   onSubmit(e) {
-    e.preventDefault();
-
     const profileData = {
-      company: this.state.company,
-      website: this.state.website,
+      name: this.state.name,
+      email: this.state.email,
+      username: this.state.username,
       location: this.state.location,
       status: this.state.status,
       skills: this.state.skills,
-      githubusername: this.state.githubusername,
       bio: this.state.bio,
-      twitter: this.state.twitter,
       facebook: this.state.facebook,
-      linkedin: this.state.linkedin,
-      youtube: this.state.youtube,
       instagram: this.state.instagram
     };
+
+    e.preventDefault();
 
     this.props.createProfile(profileData, this.props.history);
   }
@@ -124,36 +106,12 @@ class CreateProfile extends Component {
       socialInputs = (
         <div>
           <InputGroup
-            placeholder="Twitter profile URL"
-            name="twitter"
-            icon="fab fa-twitter"
-            value={this.state.twitter}
-            onChange={this.onChange}
-            error={errors.twitter}
-          />
-          <InputGroup
             placeholder="Facebook profile URL"
             name="facebook"
             icon="fab fa-facebook"
             value={this.state.facebook}
             onChange={this.onChange}
             error={errors.facebook}
-          />
-          <InputGroup
-            placeholder="LinkedIn profile URL"
-            name="linkedin"
-            icon="fab fa-linkedin"
-            value={this.state.linkedin}
-            onChange={this.onChange}
-            error={errors.linkedin}
-          />
-          <InputGroup
-            placeholder="Youtube profile URL"
-            name="youtube"
-            icon="fab fa-youtube"
-            value={this.state.youtube}
-            onChange={this.onChange}
-            error={errors.youtube}
           />
           <InputGroup
             placeholder="Instagram profile URL"
@@ -169,7 +127,7 @@ class CreateProfile extends Component {
 
     // Select options for status
     const options = [
-      { label: "* Select professional status", value: 0 },
+      { label: "* Select your current status", value: 0 },
       { label: "Developer", value: "Developer" },
       { label: "Junior Developer", value: "Junior Developer" },
       { label: "Senior Developer", value: "Senior Developer" },
@@ -191,6 +149,31 @@ class CreateProfile extends Component {
               <h1 className="display-4 text-center">Edit your profile</h1>
               <small className="d-block pb-3">* = required fields</small>
               <form onSubmit={this.onSubmit}>
+                <TextFieldGroup
+                  placeholder="* Profile name"
+                  name="name"
+                  value={this.state.name}
+                  onChange={this.onChange}
+                  error={errors.name}
+                  info="Your name and last name"
+                />
+                <TextFieldGroup
+                  placeholder="* Profile email"
+                  name="email"
+                  value={this.state.email}
+                  onChange={this.onChange}
+                  error={errors.email}
+                  info="Your email"
+                />
+                <TextFieldGroup
+                  placeholder="* Profile username"
+                  name="username"
+                  value={this.state.username}
+                  onChange={this.onChange}
+                  error={errors.username}
+                  info="Your unique username"
+                />
+
                 <SelectListGroup
                   placeholder="Status"
                   name="status"
@@ -199,22 +182,6 @@ class CreateProfile extends Component {
                   error={errors.status}
                   options={options}
                   info="Give us an idea of where you're at in your career"
-                />
-                <TextFieldGroup
-                  placeholder="Company"
-                  name="company"
-                  value={this.state.company}
-                  onChange={this.onChange}
-                  error={errors.company}
-                  info="Could be your own company or one you work for"
-                />
-                <TextFieldGroup
-                  placeholder="Website"
-                  name="website"
-                  value={this.state.website}
-                  onChange={this.onChange}
-                  error={errors.website}
-                  info="Could be your own website or company one"
                 />
                 <TextFieldGroup
                   placeholder="Location"
@@ -231,14 +198,6 @@ class CreateProfile extends Component {
                   onChange={this.onChange}
                   error={errors.skills}
                   info="Please use comma separated values(e.g HTML,CSS,JS)"
-                />
-                <TextFieldGroup
-                  placeholder="Github username"
-                  name="githubusername"
-                  value={this.state.githubusername}
-                  onChange={this.onChange}
-                  error={errors.githubusername}
-                  info="github"
                 />
                 <TextAreaFieldGroup
                   placeholder="Short Bio"

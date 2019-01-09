@@ -27,7 +27,8 @@ class Dashboard extends Component {
       dashboardContent = <Spinner />;
     } else {
       // Check if logged in user has a profile
-      if (Object.keys(profile).length > 0) {
+      // console.log(profile[0].status);
+      if (profile[0].status) {
         dashboardContent = (
           <div>
             <p className="lead text-muted">

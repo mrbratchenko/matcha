@@ -33,8 +33,6 @@ module.exports = function validateRegisterInput(data) {
     errors.email = "Email field is required";
   }
 
-  // console.log(isEmail(data.email));
-
   if (!isEmail(data.email)) {
     errors.email = "Email is not valid";
   }

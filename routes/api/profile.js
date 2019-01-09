@@ -183,63 +183,78 @@ router.post(
 
     // Get fields
     const profileFields = {};
-    profileFields.user = req.user._id;
-
-    db.collection("users")
-      .findOne({ _id: ObjectId(req.user._id) })
-      .then(user => {
-        profileFields.username = user.username;
-      });
-    // profileFields.username = "req.body.username";
+    console.log(req.body);
+    profileFields.username = req.body.username;
+    profileFields.name = req.body.name;
+    profileFields.email = req.body.email;
     if (req.body.company) profileFields.company = req.body.company;
     if (req.body.website) profileFields.website = req.body.website;
     if (req.body.location) profileFields.location = req.body.location;
     if (req.body.bio) profileFields.bio = req.body.bio;
     if (req.body.status) profileFields.status = req.body.status;
-    if (req.body.githubusername)
-      profileFields.githubusername = req.body.githubusername;
     // Skills - split into an array
     if (typeof req.body.skills !== "undefined") {
       profileFields.skills = req.body.skills.split(",");
     }
     // Social
     profileFields.social = {};
-    if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
-    if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
-    if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
     if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
     if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
     profileFields.experience = [];
     profileFields.education = [];
 
-    // console.log(req.user._id);
     db.collection("profiles")
-      .findOne({ user: ObjectId(req.user._id) })
+      .findOne({
+        $and: [
+          { user: { $ne: req.user._id } },
+          {
+            $or: [
+              { email: { $eq: req.body.email } },
+              { username: { $eq: req.body.username } }
+            ]
+          }
+        ]
+      })
       .then(profile => {
-        if (profile) {
-          // Update
-          //   console.log("here");
-          db.collection("profiles")
-            .findOneAndUpdate(
-              { user: ObjectId(req.user._id) },
-              { $set: profileFields },
-              { new: true }
-            )
-            .then(profile => res.json(profile));
+        console.log(req.user._id);
+        console.log(req.body);
+        console.log(profile);
+
+        if (profile && profile.email === req.body.email) {
+          errors.email = "Profile with this email already exists";
+          return res.status(400).json(errors);
+        } else if (profile && profile.username === req.body.username) {
+          errors.username = "This username is already taken";
+          return res.status(400).json(errors);
         } else {
-          // Create
-          // Check if username exists
           db.collection("profiles")
-            .findOne({ username: profileFields.username })
+            .findOne({ user: ObjectId(req.user._id) })
             .then(profile => {
               if (profile) {
-                errors.username = "That username already exists";
-                return res.status(400).json(errors);
+                // Update
+                db.collection("profiles")
+                  .findOneAndUpdate(
+                    { user: ObjectId(req.user._id) },
+                    { $set: profileFields },
+                    { new: true }
+                  )
+                  .then(profile => res.json(profile));
+              } else {
+                // Create
+                // Check if username exists
+                db.collection("profiles")
+                  .findOne({ username: profileFields.username })
+                  .then(profile => {
+                    if (profile) {
+                      errors.username = "That username already exists";
+                      return res.status(400).json(errors);
+                    }
+                    //   Save profile
+                    db.collection("profiles")
+                      .insertOne(profileFields)
+                      .then(profile => res.json(profile));
+                  });
               }
-              //   Save profile
-              db.collection("profiles")
-                .insertOne(profileFields)
-                .then(profile => res.json(profile));
             });
         }
       });

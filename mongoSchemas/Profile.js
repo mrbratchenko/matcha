@@ -1,41 +1,41 @@
-// module.exports = db.createCollection("profiles", {
-//   validator: {
-//     $jsonSchema: {
-//       bsonType: "object",
-//       required: ["username"],
-//       properties: {
-//         user_id: {
-//           bsonType: "object"
-//         },
-//         username: {
-//           bsonType: "string"
-//         },
-//         gender: {
-//           bsonType: "string"
-//         },
-//         sexPreferences: {
-//           bsonType: "string"
-//         },
-//         biography: {
-//           bsonType: "string"
-//         },
-//         interests: {
-//           bsonType: "array"
-//         },
-//         pictures: {
-//           bsonType: "array",
-//           maxItems: 4
-//         }
-//       }
-//     }
-//   }
-// });
+// // module.exports = db.createCollection("profiles", {
+// //   validator: {
+// //     $jsonSchema: {
+// //       bsonType: "object",
+// //       required: ["username"],
+// //       properties: {
+// //         user_id: {
+// //           bsonType: "object"
+// //         },
+// //         username: {
+// //           bsonType: "string"
+// //         },
+// //         gender: {
+// //           bsonType: "string"
+// //         },
+// //         sexPreferences: {
+// //           bsonType: "string"
+// //         },
+// //         biography: {
+// //           bsonType: "string"
+// //         },
+// //         interests: {
+// //           bsonType: "array"
+// //         },
+// //         pictures: {
+// //           bsonType: "array",
+// //           maxItems: 4
+// //         }
+// //       }
+// //     }
+// //   }
+// // });
 
 // module.exports = db.createCollection("profiles", {
 //   validator: {
 //     $jsonSchema: {
 //       bsonType: "object",
-//       required: ["status"],
+//       required: ["username"],
 //       // additionalProperties: false,
 //       properties: {
 //         _id: {
