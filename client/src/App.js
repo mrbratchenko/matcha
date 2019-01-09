@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store";
 import jwt_decode from "jwt-decode";
@@ -12,9 +12,9 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Landing from "./components/layout/Landing";
-import Register from "./components/auth/Register";
-import Login from "./components/auth/Login";
-import Activate from "./components/auth/Activate";
+import Register from "./components/authorization/Register";
+import Login from "./components/authorization/Login";
+import Activate from "./components/authorization/Activate";
 import Dashboard from "./components/dashboard/Dashboard";
 import CreateProfile from "./components/create-profile/CreateProfile";
 import EditProfile from "./components/edit-profile/EditProfile";
@@ -51,7 +51,7 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <Router>
+        <BrowserRouter>
           <div className="App">
             <Navbar />
             <Route exact path="/" component={Landing} />
@@ -102,7 +102,7 @@ class App extends Component {
             </div>
             <Footer />
           </div>
-        </Router>
+        </BrowserRouter>
       </Provider>
     );
   }

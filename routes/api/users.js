@@ -121,6 +121,42 @@ router.post("/login", (req, res) => {
   const password = req.body.password;
 
   // find user by email
+  db.collection("users")
+    .findOne({ email: { $eq: email } })
+    .then(user => {
+      // check for user
+      if (!user) {
+        errors.email = "User not found";
+        return res.status(400).json(errors);
+      }
+      // check password
+      bcrypt.compare(password, user.password).then(match => {
+        if (match) {
+          if (user && user.verification === false) {
+            errors.verification =
+              "User email has not been confirmed. Please check your email.";
+            return res.status(400).json(errors);
+          }
+          // user matched
+          const payload = {
+            id: user._id,
+            name: user.name,
+            username: user.username
+          };
+          // sign token
+          jwt.sign(payload, keys.jwtKey, { expiresIn: 7200 }, (err, token) => {
+            res.json({
+              success: true,
+              token: "Bearer " + token
+            });
+          });
+        } else {
+          errors.password = "Password incorrect";
+          return res.status(400).json(errors);
+        }
+      });
+    })
+    .catch(err => console.log(err));
 });
 
 // @route   GET api/users/activation/:email/:code

@@ -33,7 +33,7 @@ class Dashboard extends Component {
           <div>
             <p className="lead text-muted">
               Welcome{" "}
-              <Link to={`/profile/${profile.username}`}>{user.name}</Link>
+              <Link to={`/profile/${profile[0].username}`}>{user.name}</Link>
             </p>
             <ProfileActions />
             <Experience experience={profile[0].experience} />
