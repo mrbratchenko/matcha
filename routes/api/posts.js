@@ -2,14 +2,7 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const ObjectId = require("mongodb").ObjectID;
-
-// Validation
 const validatePostInput = require("../../validation/post");
-
-// @route   GET api/posts/test
-// @desc    Test post route
-// @access  Public
-router.get("/test", (req, res) => res.json({ msg: "Posts works!" }));
 
 // @route   GET api/posts
 // @desc    Get posts
@@ -64,9 +57,6 @@ router.post(
       comments: [],
       date: Date.now()
     };
-    // db.collection("posts")
-    //   .insertOne(newPost)
-    //   .then(post => res.json(post));
     db.collection("posts")
       .insertOne(newPost)
       .then(
@@ -157,7 +147,7 @@ router.post(
 );
 
 // @route   POST api/posts/unlike/:id
-// @desc    Inlike post
+// @desc    Unlike post
 // @access  Private
 router.post(
   "/unlike/:id",

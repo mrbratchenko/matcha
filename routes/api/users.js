@@ -73,13 +73,13 @@ router.post("/register", (req, res) => {
             var transporter = nodemailer.createTransport({
               service: "gmail",
               auth: {
-                user: "agent.tony.white@gmail.com",
-                pass: "w3qE8yEv"
+                user: keys.mailerUser,
+                pass: keys.mailerPass
               }
             });
             var mailOptions = {
               from: "matches@gmail.com",
-              to: "agent.tony.white@gmail.com", //req.body.email,
+              to: "agent.tony.white@gmail.com", // req.body.email,
               subject: "Please activate your Matches account",
               text:
                 "Hello " +
