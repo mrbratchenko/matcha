@@ -177,13 +177,12 @@ router.post(
 
     // Check validation
     if (!isValid) {
-      // Return errors with 400 status
-      return res.status(400).json(errors);
+      // return res.status(400).json(errors);
     }
 
     // Get fields
     const profileFields = {};
-    console.log(req.body);
+    // console.log(req.body);
     profileFields.username = req.body.username;
     profileFields.name = req.body.name;
     profileFields.email = req.body.email;
@@ -193,8 +192,15 @@ router.post(
     if (req.body.bio) profileFields.bio = req.body.bio;
     if (req.body.status) profileFields.status = req.body.status;
     // Skills - split into an array
-    if (typeof req.body.skills !== "undefined") {
+    console.log(req.body.skills.indexOf(","));
+
+    if (
+      typeof req.body.skills !== "undefined" &&
+      req.body.skills.indexOf(",") > -1
+    ) {
       profileFields.skills = req.body.skills.split(",");
+    } else {
+      errors.skills = "Please use coma separated values";
     }
     // Social
     profileFields.social = {};
@@ -216,47 +222,47 @@ router.post(
         ]
       })
       .then(profile => {
-        console.log(req.user._id);
-        console.log(req.body);
-        console.log(profile);
-
         if (profile && profile.email === req.body.email) {
           errors.email = "Profile with this email already exists";
-          return res.status(400).json(errors);
-        } else if (profile && profile.username === req.body.username) {
-          errors.username = "This username is already taken";
-          return res.status(400).json(errors);
-        } else {
-          db.collection("profiles")
-            .findOne({ user: ObjectId(req.user._id) })
-            .then(profile => {
-              if (profile) {
-                // Update
-                db.collection("profiles")
-                  .findOneAndUpdate(
-                    { user: ObjectId(req.user._id) },
-                    { $set: profileFields },
-                    { new: true }
-                  )
-                  .then(profile => res.json(profile));
-              } else {
-                // Create
-                // Check if username exists
-                db.collection("profiles")
-                  .findOne({ username: profileFields.username })
-                  .then(profile => {
-                    if (profile) {
-                      errors.username = "That username already exists";
-                      return res.status(400).json(errors);
-                    }
-                    //   Save profile
-                    db.collection("profiles")
-                      .insertOne(profileFields)
-                      .then(profile => res.json(profile));
-                  });
-              }
-            });
         }
+        if (profile && profile.username === req.body.username) {
+          errors.username = "This username is already taken";
+        }
+
+        if (Object.keys(errors).length > 0 || !isValid) {
+          console.log(errors);
+          return res.status(400).json(errors);
+        }
+
+        db.collection("profiles")
+          .findOne({ user: ObjectId(req.user._id) })
+          .then(profile => {
+            if (profile) {
+              // Update
+              db.collection("profiles")
+                .findOneAndUpdate(
+                  { user: ObjectId(req.user._id) },
+                  { $set: profileFields },
+                  { new: true }
+                )
+                .then(profile => res.json(profile));
+            } else {
+              // Create
+              // Check if username exists
+              db.collection("profiles")
+                .findOne({ username: profileFields.username })
+                .then(profile => {
+                  if (profile) {
+                    errors.username = "That username already exists";
+                    return res.status(400).json(errors);
+                  }
+                  //   Save profile
+                  db.collection("profiles")
+                    .insertOne(profileFields)
+                    .then(profile => res.json(profile));
+                });
+            }
+          });
       });
   }
 );

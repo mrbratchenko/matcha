@@ -49,24 +49,6 @@ class Register extends Component {
     };
 
     this.props.registerUser(newUser, this.props.history);
-    // if (
-    //   window.alert(
-    //     "Success! Please check your email for an account activation link."
-    //   )
-    // );
-    // this.setState({
-    //   name: "",
-    //   username: "",
-    //   email: "",
-    //   password: "",
-    //   password2: ""
-    // });
-    //second parameter to redirect within action , not component
-
-    // axios
-    //   .post("/api/users/register", newUser)
-    //   .then(res => console.log(res.data))
-    //   .catch(err => this.setState({ errors: err.response.data }));
   }
 
   render() {

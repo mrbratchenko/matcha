@@ -9,9 +9,10 @@ import SelectListGroup from "../common/SelectListGroup";
 import { createProfile, getCurrentProfile } from "../../actions/profileActions";
 import isEmpty from "../../validation/is-empty";
 
-class CreateProfile extends Component {
+class EditProfile extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       displaySocialInputs: false,
       name: "",
@@ -31,26 +32,41 @@ class CreateProfile extends Component {
   }
 
   componentDidMount() {
+    console.log("componentDidMount - done!");
     this.props.getCurrentProfile();
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.errors) {
-      this.setState({ errors: nextProps.errors });
-    }
+    console.log("componentWillReceiveProps - done!");
 
-    if (nextProps.profile.profile) {
+    if (Object.keys(nextProps.errors).length) {
+      this.setState({
+        errors: nextProps.errors
+      });
+    } else if (nextProps.profile.profile) {
       const profile = nextProps.profile.profile[0];
+
       // Bring skills array back to CSV
-      // console.log(profile);
-      const skillsCSV = profile.skills.join(",");
-      profile.name = !isEmpty(profile.name) ? profile.name : "";
-      profile.username = !isEmpty(profile.username) ? profile.username : "";
-      profile.email = !isEmpty(profile.email) ? profile.email : "";
+      const skillsCSV = !isEmpty(profile.skills)
+        ? profile.skills.join(",")
+        : "";
 
       // If profile doesn't exist, make empty string
       profile.location = !isEmpty(profile.location) ? profile.location : "";
       profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
+      profile.status = !isEmpty(profile.status) ? profile.status : "";
+
+      if (!isEmpty(this.state.name)) {
+        profile.name = this.state.name;
+      }
+
+      if (!isEmpty(this.state.username)) {
+        profile.username = this.state.username;
+      }
+
+      if (!isEmpty(this.state.email)) {
+        profile.email = this.state.email;
+      }
 
       profile.social = !isEmpty(profile.social) ? profile.social : {};
       profile.facebook = !isEmpty(profile.social.facebook)
@@ -61,9 +77,10 @@ class CreateProfile extends Component {
         : "";
 
       // Set component fields state
+
       this.setState({
         name: profile.name,
-        email: profile.email, //////////////////////
+        email: profile.email,
         username: profile.username,
         location: profile.location,
         status: profile.status,
@@ -76,6 +93,8 @@ class CreateProfile extends Component {
   }
 
   onSubmit(e) {
+    e.preventDefault();
+
     const profileData = {
       name: this.state.name,
       email: this.state.email,
@@ -87,8 +106,6 @@ class CreateProfile extends Component {
       facebook: this.state.facebook,
       instagram: this.state.instagram
     };
-
-    e.preventDefault();
 
     this.props.createProfile(profileData, this.props.history);
   }
@@ -237,7 +254,7 @@ class CreateProfile extends Component {
   }
 }
 
-CreateProfile.propTypes = {
+EditProfile.propTypes = {
   createProfile: PropTypes.func.isRequired,
   getCurrentProfile: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired,
@@ -252,4 +269,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   { createProfile, getCurrentProfile }
-)(withRouter(CreateProfile));
+)(withRouter(EditProfile));

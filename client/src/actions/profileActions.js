@@ -6,7 +6,8 @@ import {
   PROFILE_LOADING,
   CLEAR_CURRENT_PROFILE,
   GET_ERRORS,
-  SET_CURRENT_USER
+  SET_CURRENT_USER,
+  CLEAR_ERRORS
 } from "./types";
 
 // Get username
@@ -15,6 +16,7 @@ export const getUsername = "passed username";
 // Get current profile
 export const getCurrentProfile = () => dispatch => {
   dispatch(setProfileLoading());
+  dispatch(clearErrors());
   axios
     .get("./api/profile")
     .then(res =>
@@ -177,4 +179,11 @@ export const getProfiles = () => dispatch => {
         payload: null
       })
     );
+};
+
+// Clear errors
+export const clearErrors = () => {
+  return {
+    type: CLEAR_ERRORS
+  };
 };
