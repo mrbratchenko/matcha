@@ -15,6 +15,7 @@ router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log(req.user._id);
     const errors = {};
     // if (!req.user_id.match(/^[0-9a-fA-F]{24}$/)) {
     //   errors.profile = "There is no profile for this user";
@@ -33,14 +34,17 @@ router.get(
             as: "user"
           }
         },
-        {
-          $unwind: "$user"
-        },
+
         {
           $project: {
-            "user.email": 0,
-            "user.password": 0
+            "user._id": 0,
+            "user.ifVerified": 0,
+            "user.password": 0,
+            "user.verificationCode": 0
           }
+        },
+        {
+          $unwind: "$user"
         }
       ])
       .toArray((err, profile) => {
@@ -49,6 +53,7 @@ router.get(
           return res.status(404).json(errors);
         }
         res.json(profile);
+        console.log(profile);
       });
   }
 );
@@ -174,11 +179,6 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const { errors, isValid } = validateProfileInput(req.body);
-
-    // Check validation
-    if (!isValid) {
-      // return res.status(400).json(errors);
-    }
 
     // Get fields
     const profileFields = {};

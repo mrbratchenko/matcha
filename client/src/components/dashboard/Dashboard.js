@@ -27,7 +27,7 @@ class Dashboard extends Component {
       dashboardContent = <Spinner />;
     } else {
       // Check if logged in user has a profile
-      // console.log(profile[0].status);
+      console.log(this.props);
       if (profile[0].status) {
         dashboardContent = (
           <div>

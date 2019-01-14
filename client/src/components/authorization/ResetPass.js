@@ -1,16 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loginUser } from "../../actions/authActions";
+import { resetPass } from "../../actions/authActions";
 import TextFieldGroup from "../common/TextFieldGroup";
-import { Link } from "react-router-dom";
 
-class Login extends Component {
+class ResetPass extends Component {
   constructor() {
     super();
     this.state = {
       email: "",
-      password: "",
       errors: {}
     };
 
@@ -41,11 +39,10 @@ class Login extends Component {
     e.preventDefault();
 
     const userData = {
-      email: this.state.email,
-      password: this.state.password
+      email: this.state.email
     };
 
-    this.props.loginUser(userData);
+    this.props.resetPass(userData);
   }
 
   render() {
@@ -55,11 +52,11 @@ class Login extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Log In</h1>
+              <h1 className="display-4 text-center">Password Reset</h1>
               <p className="lead text-center">
-                Sign in to your Matches account
+                Please provide your email address
               </p>
-              <form onSubmit={this.onSubmit}>
+              <form noValidate onSubmit={this.onSubmit}>
                 <TextFieldGroup
                   placeholder="Email Address"
                   name="email"
@@ -68,15 +65,6 @@ class Login extends Component {
                   onChange={this.onChange}
                   error={errors.email}
                 />
-                <TextFieldGroup
-                  placeholder="Password"
-                  name="password"
-                  type="password"
-                  value={this.state.password}
-                  onChange={this.onChange}
-                  error={errors.password || errors.verification}
-                />
-                <Link to="/reset-password">Forgot password, stupid?</Link>
                 <input
                   type="submit"
                   className="btn btn-danger btn-block mt-4"
@@ -90,8 +78,8 @@ class Login extends Component {
   }
 }
 
-Login.propTypes = {
-  loginUser: PropTypes.func.isRequired,
+ResetPass.propTypes = {
+  resetPass: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -103,5 +91,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { loginUser }
-)(Login);
+  { resetPass }
+)(ResetPass);

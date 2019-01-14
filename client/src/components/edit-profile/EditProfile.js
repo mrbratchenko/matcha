@@ -38,6 +38,7 @@ class EditProfile extends Component {
 
   componentWillReceiveProps(nextProps) {
     console.log("componentWillReceiveProps - done!");
+    // console.log(nextProps);
 
     if (Object.keys(nextProps.errors).length) {
       this.setState({
@@ -45,11 +46,14 @@ class EditProfile extends Component {
       });
     } else if (nextProps.profile.profile) {
       const profile = nextProps.profile.profile[0];
-
+      console.log(profile);
       // Bring skills array back to CSV
       const skillsCSV = !isEmpty(profile.skills)
         ? profile.skills.join(",")
         : "";
+      profile.name = profile.user.name;
+      profile.email = profile.user.email;
+      profile.username = profile.user.username;
 
       // If profile doesn't exist, make empty string
       profile.location = !isEmpty(profile.location) ? profile.location : "";
