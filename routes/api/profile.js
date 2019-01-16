@@ -9,47 +9,29 @@ const validateExperienceInput = require("../../validation/experience");
 const validateEducationInput = require("../../validation/education");
 
 // @route   GET api/profile
-// @desc    Test current users profile
+// @desc    Get current users profile
 // @access  Private
 router.get(
   "/",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const errors = {};
-    // if (!req.user_id.match(/^[0-9a-fA-F]{24}$/)) {
-    //   errors.profile = "There is no profile for this user";
-    //   return res.status(404).json(errors);
-    // }
-    db.collection("profiles")
-      .aggregate([
+
+    db.collection("users")
+      .findOne(
         {
-          $match: { user: ObjectId(req.user._id) }
+          _id: req.user._id
         },
-        {
-          $lookup: {
-            from: "users",
-            localField: "user",
-            foreignField: "_id",
-            as: "user"
-          }
-        },
-        {
-          $unwind: "$user"
-        },
-        {
-          $project: {
-            "user.email": 0,
-            "user.password": 0
-          }
-        }
-      ])
-      .toArray((err, profile) => {
-        if (profile.length === 0 || err) {
+        { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
+      )
+      .then(profile => {
+        if (!profile) {
           errors.profile = "There is no profile for this user";
           return res.status(404).json(errors);
         }
         res.json(profile);
-      });
+      })
+      .catch(err => console.log(err));
   }
 );
 
@@ -58,29 +40,11 @@ router.get(
 // @access  Public
 router.get("/all", (req, res) => {
   const errors = {};
-  db.collection("profiles")
-    .aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "user",
-          foreignField: "_id",
-          as: "user"
-        }
-      },
-      {
-        $unwind: "$user"
-      },
-      {
-        $project: {
-          "user.email": 0,
-          "user.password": 0
-        }
-      }
-    ])
+  db.collection("users")
+    .find({}, { fields: { password: 0, isVerified: 0, verificationCode: 0 } })
     .toArray((err, profiles) => {
       if (profiles.length === 0 || err) {
-        errors.profile = "There are no profiles";
+        errors.profiles = "There are no profiles";
         return res.status(404).json(errors);
       }
       res.json(profiles);
@@ -92,36 +56,21 @@ router.get("/all", (req, res) => {
 // @access  Public
 router.get("/username/:username", (req, res) => {
   var errors = {};
-  db.collection("profiles")
-    .aggregate([
+  db.collection("users")
+    .findOne(
       {
-        $match: { username: req.params.username }
+        username: req.params.username
       },
-      {
-        $lookup: {
-          from: "users",
-          localField: "user",
-          foreignField: "_id",
-          as: "user"
-        }
-      },
-      {
-        $unwind: "$user"
-      },
-      {
-        $project: {
-          "user.email": 0,
-          "user.password": 0
-        }
-      }
-    ])
-    .toArray((err, profile) => {
-      if (profile.length === 0 || err) {
+      { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
+    )
+    .then(profile => {
+      if (!profile) {
         errors.profile = "There is no profile for this user";
         return res.status(404).json(errors);
       }
       res.json(profile);
-    });
+    })
+    .catch(err => console.log(err));
 });
 
 // @route   GET api/profile/user/:user_id
@@ -134,36 +83,21 @@ router.get("/user/:user_id", (req, res) => {
   //   errors.profile = "There is no profile for this user";
   //   return res.status(404).json(errors);
   // }
-  db.collection("profiles")
-    .aggregate([
+  db.collection("users")
+    .findOne(
       {
-        $match: { user: ObjectId(req.params.user_id) }
+        _id: ObjectId(req.params.user_id)
       },
-      {
-        $lookup: {
-          from: "users",
-          localField: "user",
-          foreignField: "_id",
-          as: "user"
-        }
-      },
-      {
-        $unwind: "$user"
-      },
-      {
-        $project: {
-          "user.email": 0,
-          "user.password": 0
-        }
-      }
-    ])
-    .toArray((err, profile) => {
-      if (profile.length === 0 || err) {
+      { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
+    )
+    .then(profile => {
+      if (!profile) {
         errors.profile = "There is no profile for this user";
         return res.status(404).json(errors);
       }
       res.json(profile);
-    });
+    })
+    .catch(err => console.log(err));
 });
 
 // @route   POST api/profile
@@ -190,7 +124,7 @@ router.post(
     if (req.body.website) profileFields.website = req.body.website;
     if (req.body.location) profileFields.location = req.body.location;
     if (req.body.bio) profileFields.bio = req.body.bio;
-    if (req.body.status) profileFields.status = req.body.status;
+    if (req.body.gender) profileFields.gender = req.body.gender;
     // Skills - split into an array
     console.log(req.body.skills.indexOf(","));
 
@@ -209,10 +143,10 @@ router.post(
     profileFields.experience = [];
     profileFields.education = [];
 
-    db.collection("profiles")
+    db.collection("users")
       .findOne({
         $and: [
-          { user: { $ne: req.user._id } },
+          { _id: { $ne: req.user._id } },
           {
             $or: [
               { email: { $eq: req.body.email } },
@@ -234,35 +168,13 @@ router.post(
           return res.status(400).json(errors);
         }
 
-        db.collection("profiles")
-          .findOne({ user: ObjectId(req.user._id) })
-          .then(profile => {
-            if (profile) {
-              // Update
-              db.collection("profiles")
-                .findOneAndUpdate(
-                  { user: ObjectId(req.user._id) },
-                  { $set: profileFields },
-                  { new: true }
-                )
-                .then(profile => res.json(profile));
-            } else {
-              // Create
-              // Check if username exists
-              db.collection("profiles")
-                .findOne({ username: profileFields.username })
-                .then(profile => {
-                  if (profile) {
-                    errors.username = "That username already exists";
-                    return res.status(400).json(errors);
-                  }
-                  //   Save profile
-                  db.collection("profiles")
-                    .insertOne(profileFields)
-                    .then(profile => res.json(profile));
-                });
-            }
-          });
+        db.collection("users")
+          .findOneAndUpdate(
+            { _id: ObjectId(req.user._id) },
+            { $set: profileFields },
+            { new: true }
+          )
+          .then(profile => res.json(profile));
       });
   }
 );
@@ -290,9 +202,9 @@ router.post(
       current: req.body.current,
       description: req.body.description
     };
-    db.collection("profiles")
+    db.collection("users")
       .updateOne(
-        { user: ObjectId(req.user._id) },
+        { _id: ObjectId(req.user._id) },
         { $push: { experience: newExp } }
       )
       .then(profile => res.json(profile));
@@ -322,9 +234,9 @@ router.post(
       current: req.body.current,
       description: req.body.description
     };
-    db.collection("profiles")
+    db.collection("users")
       .updateOne(
-        { user: ObjectId(req.user._id) },
+        { _id: ObjectId(req.user._id) },
         { $push: { education: newEdu } }
       )
       .then(profile => res.json(profile));
@@ -339,7 +251,7 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // Get remove index
-    db.collection("profiles")
+    db.collection("users")
       .findOneAndUpdate(
         { "experience._id": ObjectId(req.params.exp_id) },
         { $pull: { experience: { _id: ObjectId(req.params.exp_id) } } },
@@ -360,7 +272,7 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // Get remove index
-    db.collection("profiles")
+    db.collection("users")
       .findOneAndUpdate(
         { "education._id": ObjectId(req.params.edu_id) },
         { $pull: { education: { _id: ObjectId(req.params.edu_id) } } },
@@ -381,13 +293,7 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // Get remove index
-    db.collection("profiles")
-      .removeOne({ user: ObjectId(req.user._id) })
-      .then(() => {
-        db.collection("users")
-          .removeOne({ _id: ObjectId(req.user._id) })
-          .then(() => res.json({ sucess: true }));
-      });
+    db.collection("users").removeOne({ _id: ObjectId(req.user._id) });
   }
 );
 

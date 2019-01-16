@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loginUser } from "../../actions/authActions";
+import { changePass } from "../../actions/authActions";
+import queryString from "query-string"; // for parsing req.query for backend
 import TextFieldGroup from "../common/TextFieldGroup";
-import { Link } from "react-router-dom";
 
-class Login extends Component {
+class ChangePass extends Component {
   constructor() {
     super();
     this.state = {
-      email: "",
       password: "",
+      password2: "",
       errors: {}
     };
 
@@ -18,16 +18,7 @@ class Login extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentDidMount() {
-    if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
-    }
-  }
-
   componentWillReceiveProps(nextProps) {
-    if (nextProps.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
-    }
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
@@ -40,43 +31,45 @@ class Login extends Component {
   onSubmit(e) {
     e.preventDefault();
 
+    const values = queryString.parse(this.props.location.search);
+
     const userData = {
-      email: this.state.email,
-      password: this.state.password
+      email: values.email,
+      code: values.code,
+      password: this.state.password,
+      password2: this.state.password2
     };
 
-    this.props.loginUser(userData);
+    this.props.changePass(userData, this.props.history);
   }
 
   render() {
     const { errors } = this.state;
+
     return (
-      <div className="login">
+      <div className="activation">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Log In</h1>
-              <p className="lead text-center">
-                Sign in to your Matches account
-              </p>
+              <h1 className="display-4 text-center">Password reset</h1>
+              <p className="lead text-center">Please chose new password</p>
               <form noValidate onSubmit={this.onSubmit}>
                 <TextFieldGroup
-                  placeholder="Email Address"
-                  name="email"
-                  type="email"
-                  value={this.state.email}
-                  onChange={this.onChange}
-                  error={errors.email || errors.verification}
-                />
-                <TextFieldGroup
-                  placeholder="Password"
+                  placeholder="New password"
                   name="password"
                   type="password"
                   value={this.state.password}
                   onChange={this.onChange}
                   error={errors.password}
                 />
-                <Link to="/reset-password">Forgot your password?</Link>
+                <TextFieldGroup
+                  placeholder="Confirm new password"
+                  name="password2"
+                  type="password"
+                  value={this.state.password2}
+                  onChange={this.onChange}
+                  error={errors.password2}
+                />
                 <input
                   type="submit"
                   className="btn btn-danger btn-block mt-4"
@@ -90,18 +83,16 @@ class Login extends Component {
   }
 }
 
-Login.propTypes = {
-  loginUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
+ChangePass.propTypes = {
+  changePass: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth,
   errors: state.errors
 });
 
 export default connect(
   mapStateToProps,
-  { loginUser }
-)(Login);
+  { changePass }
+)(ChangePass);

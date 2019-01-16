@@ -15,7 +15,6 @@ class Activate extends Component {
 
   componentDidMount() {
     const values = queryString.parse(this.props.location.search);
-    // console.log(values);
     const userData = {
       email: values.email,
       code: values.code

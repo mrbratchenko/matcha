@@ -19,7 +19,7 @@ class EditProfile extends Component {
       username: "",
       email: "",
       location: "",
-      status: "",
+      gender: "",
       skills: "",
       bio: "",
       twitter: "",
@@ -44,8 +44,8 @@ class EditProfile extends Component {
         errors: nextProps.errors
       });
     } else if (nextProps.profile.profile) {
-      const profile = nextProps.profile.profile[0];
-
+      const profile = nextProps.profile.profile;
+      console.log(nextProps);
       // Bring skills array back to CSV
       const skillsCSV = !isEmpty(profile.skills)
         ? profile.skills.join(",")
@@ -54,7 +54,7 @@ class EditProfile extends Component {
       // If profile doesn't exist, make empty string
       profile.location = !isEmpty(profile.location) ? profile.location : "";
       profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
-      profile.status = !isEmpty(profile.status) ? profile.status : "";
+      profile.gender = !isEmpty(profile.gender) ? profile.gender : "";
 
       if (!isEmpty(this.state.name)) {
         profile.name = this.state.name;
@@ -83,7 +83,7 @@ class EditProfile extends Component {
         email: profile.email,
         username: profile.username,
         location: profile.location,
-        status: profile.status,
+        gender: profile.gender,
         skills: skillsCSV,
         bio: profile.bio,
         facebook: profile.facebook,
@@ -100,7 +100,7 @@ class EditProfile extends Component {
       email: this.state.email,
       username: this.state.username,
       location: this.state.location,
-      status: this.state.status,
+      gender: this.state.gender,
       skills: this.state.skills,
       bio: this.state.bio,
       facebook: this.state.facebook,
@@ -142,18 +142,19 @@ class EditProfile extends Component {
       );
     }
 
-    // Select options for status
+    // Select options for gender
     const options = [
-      { label: "* Select your current status", value: 0 },
-      { label: "Developer", value: "Developer" },
-      { label: "Junior Developer", value: "Junior Developer" },
-      { label: "Senior Developer", value: "Senior Developer" },
-      { label: "Manager", value: "Manager" },
-      { label: "Student or Learning", value: "Student or Learning" },
-      { label: "Instructor or Teacher", value: "Instructor or Teacher" },
-      { label: "Intern", value: "Intern" },
-      { label: "Other", value: "Other" }
+      { label: "* Select your gender", value: 0 },
+      { label: "male", value: "male" },
+      { label: "female", value: "female" },
+      { label: "undefined", value: "undefined" }
     ];
+
+    // if (this.state.gender) {
+    //   options.filter(function(value, index, arr) {
+    //     return value === "male";
+    //   });
+    // }
 
     return (
       <div className="create-profile">
@@ -163,7 +164,11 @@ class EditProfile extends Component {
               <Link to="/dashboard" className="btn btn-light">
                 Go Back
               </Link>
-              <h1 className="display-4 text-center">Edit your profile</h1>
+              <h1 className="display-4 text-center">
+                {this.state.gender
+                  ? "Edit your profile"
+                  : "Create your profile"}
+              </h1>
               <small className="d-block pb-3">* = required fields</small>
               <form onSubmit={this.onSubmit}>
                 <TextFieldGroup
@@ -192,14 +197,15 @@ class EditProfile extends Component {
                 />
 
                 <SelectListGroup
-                  placeholder="Status"
-                  name="status"
-                  value={this.state.status}
+                  placeholder="* Your gender"
+                  name="gender"
+                  value={this.state.gender}
                   onChange={this.onChange}
-                  error={errors.status}
+                  error={errors.gender}
                   options={options}
-                  info="Give us an idea of where you're at in your career"
+                  info="Your gender"
                 />
+
                 <TextFieldGroup
                   placeholder="Location"
                   name="location"
