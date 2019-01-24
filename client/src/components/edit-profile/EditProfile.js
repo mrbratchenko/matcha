@@ -4,6 +4,7 @@ import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import TextFieldGroup from "../common/TextFieldGroup";
 import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
+import PictureGroup from "../common/PictureGroup";
 import InputGroup from "../common/InputGroup";
 import SelectListGroup from "../common/SelectListGroup";
 import { createProfile, getCurrentProfile } from "../../actions/profileActions";
@@ -20,7 +21,8 @@ class EditProfile extends Component {
       email: "",
       location: "",
       gender: "",
-      skills: "",
+      preference: "",
+      interests: "",
       bio: "",
       twitter: "",
       instagram: "",
@@ -45,16 +47,19 @@ class EditProfile extends Component {
       });
     } else if (nextProps.profile.profile) {
       const profile = nextProps.profile.profile;
-      console.log(nextProps);
-      // Bring skills array back to CSV
-      const skillsCSV = !isEmpty(profile.skills)
-        ? profile.skills.join(",")
+
+      // Bring interests array back to CSV
+      const interestsCSV = !isEmpty(profile.interests)
+        ? profile.interests.join(",")
         : "";
 
       // If profile doesn't exist, make empty string
       profile.location = !isEmpty(profile.location) ? profile.location : "";
       profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
       profile.gender = !isEmpty(profile.gender) ? profile.gender : "";
+      profile.preference = !isEmpty(profile.preference)
+        ? profile.preference
+        : "";
 
       if (!isEmpty(this.state.name)) {
         profile.name = this.state.name;
@@ -84,7 +89,8 @@ class EditProfile extends Component {
         username: profile.username,
         location: profile.location,
         gender: profile.gender,
-        skills: skillsCSV,
+        preference: profile.preference,
+        interests: interestsCSV,
         bio: profile.bio,
         facebook: profile.facebook,
         instagram: profile.instagram
@@ -101,7 +107,8 @@ class EditProfile extends Component {
       username: this.state.username,
       location: this.state.location,
       gender: this.state.gender,
-      skills: this.state.skills,
+      preference: this.state.preference,
+      interests: this.state.interests,
       bio: this.state.bio,
       facebook: this.state.facebook,
       instagram: this.state.instagram
@@ -112,6 +119,10 @@ class EditProfile extends Component {
 
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
+  }
+
+  fileSelect(e) {
+    console.log(e);
   }
 
   render() {
@@ -143,18 +154,18 @@ class EditProfile extends Component {
     }
 
     // Select options for gender
-    const options = [
+    const options_gender = [
       { label: "* Select your gender", value: 0 },
       { label: "male", value: "male" },
-      { label: "female", value: "female" },
-      { label: "undefined", value: "undefined" }
+      { label: "female", value: "female" }
     ];
 
-    // if (this.state.gender) {
-    //   options.filter(function(value, index, arr) {
-    //     return value === "male";
-    //   });
-    // }
+    const options_preference = [
+      { label: "Select your sexual preference", value: 0 },
+      { label: "men", value: "men" },
+      { label: "women", value: "women" },
+      { label: "bisexual", value: "bisexual" }
+    ];
 
     return (
       <div className="create-profile">
@@ -165,7 +176,7 @@ class EditProfile extends Component {
                 Go Back
               </Link>
               <h1 className="display-4 text-center">
-                {this.state.gender
+                {this.state.interests
                   ? "Edit your profile"
                   : "Create your profile"}
               </h1>
@@ -202,8 +213,18 @@ class EditProfile extends Component {
                   value={this.state.gender}
                   onChange={this.onChange}
                   error={errors.gender}
-                  options={options}
+                  options={options_gender}
                   info="Your gender"
+                />
+
+                <SelectListGroup
+                  placeholder="Your sexual preference"
+                  name="preference"
+                  value={this.state.preference}
+                  onChange={this.onChange}
+                  error={errors.preference}
+                  options={options_preference}
+                  info="Your sexual preference"
                 />
 
                 <TextFieldGroup
@@ -215,20 +236,24 @@ class EditProfile extends Component {
                   info="City or city and state suggested"
                 />
                 <TextFieldGroup
-                  placeholder="* Skills"
-                  name="skills"
-                  value={this.state.skills}
+                  placeholder="* interests"
+                  name="interests"
+                  value={this.state.interests}
                   onChange={this.onChange}
-                  error={errors.skills}
-                  info="Please use comma separated values(e.g HTML,CSS,JS)"
+                  error={errors.interests}
+                  info="Please use commas and tags to list your interests(e.g #vegan, #geek, #piercing)"
                 />
                 <TextAreaFieldGroup
-                  placeholder="Short Bio"
+                  placeholder="Biography"
                   name="bio"
                   value={this.state.bio}
                   onChange={this.onChange}
                   error={errors.bio}
                   info="Tell us about yourself"
+                />
+                <PictureGroup
+                  onChange={this.fileSelect}
+                  info="Please upload some pictures"
                 />
 
                 <div className="mb-3">

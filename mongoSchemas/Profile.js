@@ -47,18 +47,11 @@
 //         status: {
 //           bsonType: "string"
 //         },
-//         // skills: {
-//         //   bsonType: "string"
-//         // },
+
 //         // social: {
 //         //   bsonType: "string"
 //         // },
-//         // experience: {
-//         //   bsonType: "array"
-//         // },
-//         // education: {
-//         //   bsonType: "array"
-//         // },
+
 //         website: {
 //           bsonType: "string"
 //         },

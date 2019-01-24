@@ -8,7 +8,7 @@ module.exports = function validateProfileInput(data) {
   data.name = !isEmpty(data.name) ? data.name : "";
   data.email = !isEmpty(data.email) ? data.email : "";
   data.gender = !isEmpty(data.gender) ? data.gender : "";
-  data.skills = !isEmpty(data.skills) ? data.skills : "";
+  data.interests = !isEmpty(data.interests) ? data.interests : "";
 
   if (data.name.length < 2 || data.name.length > 30) {
     errors.name = "Name must be between 2 and 30 characters";
@@ -38,8 +38,8 @@ module.exports = function validateProfileInput(data) {
     errors.gender = "Gender field is required";
   }
 
-  if (data.skills === "") {
-    errors.skills = "Skills field is required";
+  if (data.interests === "") {
+    errors.interests = "Interests field is required";
   }
 
   if (!isEmpty(data.website)) {

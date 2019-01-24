@@ -5,8 +5,6 @@ const ObjectId = require("mongodb").ObjectID;
 
 // Load validation
 const validateProfileInput = require("../../validation/profile");
-const validateExperienceInput = require("../../validation/experience");
-const validateEducationInput = require("../../validation/education");
 
 // @route   GET api/profile
 // @desc    Get current users profile
@@ -121,27 +119,29 @@ router.post(
     profileFields.name = req.body.name;
     profileFields.email = req.body.email;
     if (req.body.company) profileFields.company = req.body.company;
-    if (req.body.website) profileFields.website = req.body.website;
     if (req.body.location) profileFields.location = req.body.location;
     if (req.body.bio) profileFields.bio = req.body.bio;
     if (req.body.gender) profileFields.gender = req.body.gender;
-    // Skills - split into an array
-    console.log(req.body.skills.indexOf(","));
+    if (req.body.preference) profileFields.preference = req.body.preference;
 
     if (
-      typeof req.body.skills !== "undefined" &&
-      req.body.skills.indexOf(",") > -1
+      typeof req.body.interests !== "undefined" &&
+      req.body.interests.indexOf(",") > -1 &&
+      req.body.interests.indexOf("#") > -1
     ) {
-      profileFields.skills = req.body.skills.split(",");
+      profileFields.interests = req.body.interests.split(",");
+      profileFields.interests.map(str => {
+        if (str.trim().indexOf("#") !== 0)
+          errors.interests = "Please use tags with every interest";
+      });
     } else {
-      errors.skills = "Please use coma separated values";
+      errors.interests = "Please use commas and tags";
     }
+
     // Social
     profileFields.social = {};
     if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
     if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
-    profileFields.experience = [];
-    profileFields.education = [];
 
     db.collection("users")
       .findOne({
@@ -179,114 +179,8 @@ router.post(
   }
 );
 
-// @route   POST api/profile/experience
-// @desc    Add exp to profile
-// @access  Private
-router.post(
-  "/experience",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    const { errors, isValid } = validateExperienceInput(req.body);
-    // Check validation
-    if (!isValid) {
-      // Return errors with 400 status
-      return res.status(400).json(errors);
-    }
-    const newExp = {
-      _id: new ObjectId(),
-      title: req.body.title,
-      company: req.body.company,
-      location: req.body.location,
-      from: req.body.from,
-      to: req.body.to,
-      current: req.body.current,
-      description: req.body.description
-    };
-    db.collection("users")
-      .updateOne(
-        { _id: ObjectId(req.user._id) },
-        { $push: { experience: newExp } }
-      )
-      .then(profile => res.json(profile));
-  }
-);
-
-// @route   POST api/profile/education
-// @desc    Add edu to profile
-// @access  Private
-router.post(
-  "/education",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    const { errors, isValid } = validateEducationInput(req.body);
-    // Check validation
-    if (!isValid) {
-      // Return errors with 400 status
-      return res.status(400).json(errors);
-    }
-    const newEdu = {
-      _id: new ObjectId(),
-      school: req.body.school,
-      degree: req.body.degree,
-      fieldofstudy: req.body.fieldofstudy,
-      from: req.body.from,
-      to: req.body.to,
-      current: req.body.current,
-      description: req.body.description
-    };
-    db.collection("users")
-      .updateOne(
-        { _id: ObjectId(req.user._id) },
-        { $push: { education: newEdu } }
-      )
-      .then(profile => res.json(profile));
-  }
-);
-
-// @route   DELETE api/profile/experience/:exp_id
-// @desc    Delete exp from profile
-// @access  Private
-router.delete(
-  "/experience/:exp_id",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    // Get remove index
-    db.collection("users")
-      .findOneAndUpdate(
-        { "experience._id": ObjectId(req.params.exp_id) },
-        { $pull: { experience: { _id: ObjectId(req.params.exp_id) } } },
-        {
-          sort: { _id: 1 },
-          returnOriginal: false
-        }
-      )
-      .then(profile => res.json(profile));
-  }
-);
-
-// @route   DELETE api/profile/education/:edu_id
-// @desc    Delete edu from profile
-// @access  Private
-router.delete(
-  "/education/:edu_id",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    // Get remove index
-    db.collection("users")
-      .findOneAndUpdate(
-        { "education._id": ObjectId(req.params.edu_id) },
-        { $pull: { education: { _id: ObjectId(req.params.edu_id) } } },
-        {
-          sort: { _id: 1 },
-          returnOriginal: false
-        }
-      )
-      .then(profile => res.json(profile.value));
-  }
-);
-
 // @route   DELETE api/profile/
-// @desc    Delete user and profile
+// @desc    Delete user profile
 // @access  Private
 router.delete(
   "/",
