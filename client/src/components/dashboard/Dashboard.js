@@ -20,7 +20,7 @@ class Dashboard extends Component {
   render() {
     const { user } = this.props.auth;
     const { profile, loading } = this.props.profile;
-
+    console.log(profile);
     let dashboardContent;
 
     if (profile === null || loading) {
@@ -28,16 +28,16 @@ class Dashboard extends Component {
     } else {
       // Check if logged in user has a profile
       // console.log(profile[0].status);
-      if (profile[0].status) {
+      if (profile.gender) {
         dashboardContent = (
           <div>
             <p className="lead text-muted">
               Welcome{" "}
-              <Link to={`/profile/${profile[0].username}`}>{user.name}</Link>
+              <Link to={`/profile/${profile.username}`}>{user.name}</Link>
             </p>
             <ProfileActions />
-            <Experience experience={profile[0].experience} />
-            <Education education={profile[0].education} />
+            <Experience experience={profile.experience} />
+            <Education education={profile.education} />
             <div style={{ marginBottom: "60px" }} />
             <button
               onClick={this.onDeleteClick.bind(this)}

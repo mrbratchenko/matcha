@@ -76,8 +76,8 @@ router.delete(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // Get remove index
-    db.collection("profiles")
-      .findOne({ user: ObjectId(req.user._id) })
+    db.collection("users")
+      .findOne({ _id: ObjectId(req.user._id) })
       .then(profile => {
         db.collection("posts")
           .findOne({ _id: { $eq: ObjectId(req.params.id) } })
@@ -108,8 +108,8 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // Get remove index
-    db.collection("profiles")
-      .findOne({ user: ObjectId(req.user._id) })
+    db.collection("users")
+      .findOne({ _id: ObjectId(req.user._id) })
       .then(profile => {
         db.collection("posts")
           .findOne({ _id: ObjectId(req.params.id) })
@@ -154,8 +154,8 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // Get remove index
-    db.collection("profiles")
-      .findOne({ user: ObjectId(req.user._id) })
+    db.collection("users")
+      .findOne({ _id: ObjectId(req.user._id) })
       .then(profile => {
         db.collection("posts")
           .findOne({ _id: ObjectId(req.params.id) })

@@ -2,7 +2,7 @@ import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
 
-import { GET_ERRORS, SET_CURRENT_USER } from "./types";
+import { GET_ERRORS, SET_CURRENT_USER, CLEAR_ERRORS } from "./types";
 
 // Register user
 export const registerUser = (userData, history) => dispatch => {
@@ -30,6 +30,41 @@ export const activateUser = (userData, history) => dispatch => {
       payload: err.response.data
     })
   );
+};
+
+// Reset password
+export const resetPass = (userData, history) => dispatch => {
+  // console.log(userData);
+  dispatch(clearErrors());
+  axios
+    .post("/api/users/reset-password", userData)
+    .then(res => {
+      window.alert("Success! Please check your email for password reset link.");
+      history.push("/");
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+// Change password
+export const changePass = (userData, history) => dispatch => {
+  // console.log("here");
+  axios
+    .post("/api/users/change-password", userData)
+    .then(res => {
+      window.alert("Success! Your password has been changed.");
+      history.push("/login");
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
 };
 
 // Login -get user token
@@ -72,4 +107,11 @@ export const logoutUser = () => dispatch => {
   setAuthToken(false);
   // Set cur user to {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
+};
+
+// Clear errors
+export const clearErrors = () => {
+  return {
+    type: CLEAR_ERRORS
+  };
 };

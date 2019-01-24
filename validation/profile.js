@@ -7,7 +7,7 @@ module.exports = function validateProfileInput(data) {
   data.username = !isEmpty(data.username) ? data.username : "";
   data.name = !isEmpty(data.name) ? data.name : "";
   data.email = !isEmpty(data.email) ? data.email : "";
-  data.status = !isEmpty(data.status) ? data.status : "";
+  data.gender = !isEmpty(data.gender) ? data.gender : "";
   data.skills = !isEmpty(data.skills) ? data.skills : "";
 
   if (data.name.length < 2 || data.name.length > 30) {
@@ -34,8 +34,8 @@ module.exports = function validateProfileInput(data) {
     errors.username = "Profile username is required";
   }
 
-  if (data.status === "") {
-    errors.status = "Status field is required";
+  if (data.gender === "") {
+    errors.gender = "Gender field is required";
   }
 
   if (data.skills === "") {
