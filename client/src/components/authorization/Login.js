@@ -76,7 +76,7 @@ class Login extends Component {
                   onChange={this.onChange}
                   error={errors.password || errors.verification}
                 />
-                <Link to="/reset-password">Forgot password, stupid?</Link>
+                <Link to="/reset-password">Forgot your password?</Link>
                 <input
                   type="submit"
                   className="btn btn-danger btn-block mt-4"

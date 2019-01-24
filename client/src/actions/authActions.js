@@ -32,17 +32,6 @@ export const activateUser = (userData, history) => dispatch => {
   );
 };
 
-// Reset pass
-export const resetPass = (userData, history) => dispatch => {
-  console.log(userData);
-  axios.post("/api/users/reset-password", userData).catch(err =>
-    dispatch({
-      type: GET_ERRORS,
-      payload: err.response.data
-    })
-  );
-};
-
 // Login -get user token
 export const loginUser = userData => dispatch => {
   axios
