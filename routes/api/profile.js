@@ -217,15 +217,38 @@ router.post(
   "/upload",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    console.log("sb2 " + JSON.stringify(req.body));
+    const errors = {};
+
     const storage = multer.diskStorage({
       destination: "./client/src/user-photos/",
       filename: function(req, file, cb) {
-        console.log("sb2 " + JSON.stringify(req.body));
-        cb(
-          null,
-          req.body.user + "_" + Date.now() + path.extname(file.originalname)
-        );
+        if (
+          path.extname(file.originalname) !== ".jpeg" &&
+          path.extname(file.originalname) !== ".jpg" &&
+          path.extname(file.originalname) !== ".png" &&
+          path.extname(file.originalname) !== ".bmp"
+        ) {
+          errors.format = "Please use .jpg, .png or .bmp format";
+          return res.status(404).json(errors);
+        }
+        // check if max-5 photo uploaded
+        db.collection("users")
+          .findOne({ _id: ObjectId(req.body.user) })
+          .then(profile => {
+            if (profile.photos && profile.photos.length > 4) {
+              console.log(profile.photos.length);
+              errors.format = "You may upload 5 photos only";
+              return res.status(404).json(errors);
+            } else {
+              cb(
+                null,
+                req.body.user +
+                  "_" +
+                  Date.now() +
+                  path.extname(file.originalname)
+              );
+            }
+          });
       }
     });
 
@@ -236,13 +259,58 @@ router.post(
 
     upload(req, res, err => {
       if (err) {
-        return res.status(400).json(err);
+        errors.format = "Something went wrong. Please try again later";
+        return res.status(404).json(errors);
+      }
+      if (!req.file) {
+        errors.format = "Please choose a file";
+        return res.status(404).json(errors);
       }
 
-      console.log("Request ---", req.body);
-      console.log("Request file ---", req.file); //Here you get file.
-      return res.json({ file: `${req.file.path}` });
+      db.collection("users")
+        .findOneAndUpdate(
+          { _id: ObjectId(req.body.user) },
+          { $push: { photos: req.file.filename } }
+        )
+        .then(profile => res.json(profile));
     });
+    // upload new photo
+
+    // console.log("Request ---", req.body);
+    // console.log("Request file ---", req.file);
+  }
+);
+
+// @route   DELETE api/profile/:photo_id
+// @desc    Delete pictures from profile
+// @access  Private
+router.delete(
+  "/:photo_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Get remove index
+    db.collection("users")
+      .findOneAndUpdate(
+        { "education._id": ObjectId(req.params.edu_id) },
+        { $pull: { education: { _id: ObjectId(req.params.edu_id) } } },
+        {
+          sort: { _id: 1 },
+          returnOriginal: false
+        }
+      )
+      .then(profile => res.json(profile.value));
+  }
+);
+
+// @route   DELETE api/profile/
+// @desc    Delete user and profile
+// @access  Private
+router.delete(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Get remove index
+    db.collection("users").removeOne({ _id: ObjectId(req.user._id) });
   }
 );
 

@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { uploadPhoto, getCurrentProfile } from "../../actions/profileActions";
+import Picture from "../common/Picture";
+import classnames from "classnames";
 
 class AddPhotos extends Component {
   constructor(props) {
@@ -40,8 +42,6 @@ class AddPhotos extends Component {
   }
 
   onPictureSubmit(e) {
-    e.preventDefault();
-
     const { user } = this.props.auth;
     const photoData = new FormData();
     photoData.append("user", user.id);
@@ -53,7 +53,10 @@ class AddPhotos extends Component {
   }
 
   onChange(e) {
-    this.setState({ file: e.target.files[0] });
+    e.preventDefault();
+    this.setState({ file: e.target.files[0] }, () => {
+      this.onPictureSubmit();
+    });
   }
 
   fileSelect(e) {
@@ -62,72 +65,69 @@ class AddPhotos extends Component {
 
   render() {
     const { errors } = this.state;
-    var photos = this.state.photos;
-    var photo1 = this.state.photos[0];
-    // photo1 = toString(photo1);
-    const photos = this.state.photos.map((photo, index) => (
-      <div key={index} className="p-3">
-        <i className="fa fa-check" /> {photo}
-      </div>
-    ));
+
+    const photos = this.state.photos;
+
+    var images = require.context("../../user-photos", true);
 
     return (
       <div className="add-pictures">
-        <Link to="/dashboard" className="btn btn-light">
+        <Link to="/dashboard" className="btn btn-secondary">
           Go Back
         </Link>
-        <form onSubmit={this.onPictureSubmit}>
+
+        <h1 className="display-4 text-center">Your pictures</h1>
+        <div className="custom-file mt-3">
+          <input
+            type="file"
+            name="myImage"
+            className={classnames("custom-file-input", {
+              "is-invalid": errors.format
+            })}
+            onChange={this.onChange}
+          />
+          <label className="custom-file-label">
+            Choose a file (.jpg, .png or .bmp)
+          </label>
+          {errors.format && (
+            <div className="invalid-feedback">{errors.format}</div>
+          )}
+        </div>
+
+        {/* <form onSubmit={this.onPictureSubmit}>
           <h1 className="display-4 text-center">Picture Upload</h1>
-          <input type="file" name="myImage" onChange={this.onChange} />
-          <button type="submit">Upload</button>
-        </form>
-        {photos}
+          <input
+            type="file"
+            name="myImage"
+            onChange={this.onChange}
+            className="mt-3 "
+          />
+          <button type="submit" className="btn btn-secondary">
+            Upload
+          </button>
+          {errors.format && <div className="text-danger">{errors.format}</div>}
+        </form> */}
         <div className="row pt-md-5">
-          <div className="col-lg-2 col-md-2 col-xs-2 thumb">
-            <a className="thumbnail" href="/dashboard">
-              <img
-                className="img-responsive"
-                // src={require('"' + { photo1 } + '"')}
-                alt="profile_image_1"
-              />
-            </a>
-          </div>
-          <div className="col-lg-2 col-md-2 col-xs-3 thumb">
-            <a className="thumbnail" href="/dashboard">
-              <img
-                className="img-responsive"
-                src="../../user-photos/cat.jpeg"
-                alt="profile_image_2"
-              />
-            </a>
-          </div>
-          <div className="col-lg-2 col-md-2 col-xs-2 thumb">
-            <a className="thumbnail" href="/dashboard">
-              <img
-                className="img-responsive"
-                src={require("../../cat.jpeg")}
-                alt="profile_image_3"
-              />
-            </a>
-          </div>
-          <div className="col-lg-2 col-md-2 col-xs-2 thumb">
-            <a className="thumbnail" href="/dashboard">
-              <img
-                className="img-responsive"
-                src={require("../../cat.jpeg")}
-                alt="profile_image_4"
-              />
-            </a>
-          </div>
-          <div className="col-lg-2 col-md-2 col-xs-2 thumb">
-            <a className="thumbnail" href="/dashboard">
-              <img
-                className="img-responsive"
-                src={require("../../cat.jpeg")}
-                alt="profile_image_5"
-              />
-            </a>
-          </div>
+          <Picture
+            source={photos[0] && images(`./${photos[0]}`)}
+            alt="profile_picture_1"
+          />
+          <Picture
+            source={photos[1] && images(`./${photos[1]}`)}
+            alt="profile_picture_2"
+          />
+          <Picture
+            source={photos[2] && images(`./${photos[2]}`)}
+            alt="profile_picture_3"
+          />
+          <Picture
+            source={photos[3] && images(`./${photos[3]}`)}
+            alt="profile_picture_4"
+          />
+          <Picture
+            source={photos[4] && images(`./${photos[4]}`)}
+            alt="profile_picture_5"
+          />
         </div>
       </div>
     );
@@ -138,13 +138,13 @@ AddPhotos.propTypes = {
   uploadPhoto: PropTypes.func.isRequired,
   getCurrentProfile: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired,
-  photos: PropTypes.array.isRequired,
-  errors: PropTypes.object,
+  photos: PropTypes.array,
+  errors: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
 const mapStateToProps = state => ({
   profile: state.profile,
-  photos: state.photos,
+
   auth: state.auth,
   errors: state.errors
 });
