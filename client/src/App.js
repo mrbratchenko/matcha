@@ -19,7 +19,7 @@ import ChangePass from "./components/authorization/ChangePass";
 import Activate from "./components/authorization/Activate";
 import Dashboard from "./components/dashboard/Dashboard";
 import EditProfile from "./components/edit-profile/EditProfile";
-import AddPhotos from "./components/add-photos/AddPhotos";
+import Photos from "./components/photos/Photos";
 import Profiles from "./components/profiles/Profiles";
 import Profile from "./components/profile/Profile";
 import NotFound from "./components/not-found/NotFound";
@@ -75,7 +75,7 @@ class App extends Component {
                 />
               </Switch>
               <Switch>
-                <PrivateRoute exact path="/add-photos" component={AddPhotos} />
+                <PrivateRoute exact path="/photos" component={Photos} />
               </Switch>
               <Switch>
                 <PrivateRoute exact path="/feed" component={Posts} />

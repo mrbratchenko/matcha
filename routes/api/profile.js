@@ -4,6 +4,7 @@ const passport = require("passport");
 const ObjectId = require("mongodb").ObjectID;
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 // Load validation
 const validateProfileInput = require("../../validation/profile");
@@ -214,14 +215,16 @@ router.post(
 // @desc    Upload photo of profile
 // @access  Private
 router.post(
-  "/upload",
+  "/photos",
   passport.authenticate("jwt", { session: false }),
+
   (req, res) => {
     const errors = {};
 
     const storage = multer.diskStorage({
       destination: "./client/src/user-photos/",
-      filename: function(req, file, cb) {
+      filename: function(req, file, callback) {
+        // check if extention of file is correct
         if (
           path.extname(file.originalname) !== ".jpeg" &&
           path.extname(file.originalname) !== ".jpg" &&
@@ -231,7 +234,8 @@ router.post(
           errors.format = "Please use .jpg, .png or .bmp format";
           return res.status(404).json(errors);
         }
-        // check if max-5 photo uploaded
+
+        // check if max-5 photo already uploaded
         db.collection("users")
           .findOne({ _id: ObjectId(req.body.user) })
           .then(profile => {
@@ -240,13 +244,12 @@ router.post(
               errors.format = "You may upload 5 photos only";
               return res.status(404).json(errors);
             } else {
-              cb(
-                null,
+              const filename =
                 req.body.user +
-                  "_" +
-                  Date.now() +
-                  path.extname(file.originalname)
-              );
+                "_" +
+                Date.now() +
+                path.extname(file.originalname);
+              callback(null, filename);
             }
           });
       }
@@ -255,7 +258,7 @@ router.post(
     const upload = multer({
       storage: storage,
       limits: { fileSize: 1000000 }
-    }).single("myImage");
+    }).single("userPhoto");
 
     upload(req, res, err => {
       if (err) {
@@ -266,18 +269,18 @@ router.post(
         errors.format = "Please choose a file";
         return res.status(404).json(errors);
       }
-
+      console.log(req.file);
       db.collection("users")
         .findOneAndUpdate(
           { _id: ObjectId(req.body.user) },
-          { $push: { photos: req.file.filename } }
+          { $push: { photos: req.file.filename } },
+          { returnOriginal: false }
         )
-        .then(profile => res.json(profile));
+        .then(profile => {
+          console.log("written to db");
+          res.json(profile.value);
+        });
     });
-    // upload new photo
-
-    // console.log("Request ---", req.body);
-    // console.log("Request file ---", req.file);
   }
 );
 
@@ -285,20 +288,26 @@ router.post(
 // @desc    Delete pictures from profile
 // @access  Private
 router.delete(
-  "/:photo_id",
+  "/photos/:file",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // Get remove index
     db.collection("users")
       .findOneAndUpdate(
-        { "education._id": ObjectId(req.params.edu_id) },
-        { $pull: { education: { _id: ObjectId(req.params.edu_id) } } },
+        { photos: req.params.file },
+        { $pull: { photos: req.params.file } },
         {
           sort: { _id: 1 },
           returnOriginal: false
         }
       )
-      .then(profile => res.json(profile.value));
+      .then(profile => {
+        const filePath = `./client/src/user-photos/${req.params.file}`;
+        fs.unlinkSync(filePath);
+        console.log(profile.value);
+        res.json(profile.value);
+      })
+      .catch(err => res.status(404).json({ nophotofound: "No photo found" }));
   }
 );
 
