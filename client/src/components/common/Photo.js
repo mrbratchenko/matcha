@@ -1,37 +1,34 @@
 import React from "react";
-import noPicture from "../../img/empty-photo.jpg";
+// import noPicture from "../../img/ring-loader.gif";
 
-const Photo = ({ source, alt, onDeleteClick }) => {
-  const images = require.context("../../user-photos", false);
+const Photo = ({ source, index, alt, onDeleteClick, onAvatarClick }) => {
+  let im;
+
   try {
-    source = images("./" + source);
+    im = require(`../../user-photos/${source[index]}`);
   } catch (e) {
     if (e instanceof Error && e.code === "MODULE_NOT_FOUND") {
-      source = noPicture;
-      // console.log("error");
+      // im = noPicture;
+      return null;
     }
   }
-  console.log(source);
+
   return (
     <div className="col-lg-2 col-md-2 col-xs-2 thumb">
-      <div className="form-check form-check-inline mb-3">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          id="inlineCheckbox1"
-          value="option1"
-        />
-        <label className="form-check-label" htmlFor="inlineCheckbox1" />
-      </div>
       <img
         className="img-thumbnail"
-        src={source}
+        src={im}
         alt={alt}
-        style={{ height: "120px" }}
+        style={{ height: "120px", width: "auto" }}
       />
-      <button className="btn btn-danger mt-3" onClick={onDeleteClick}>
-        Delete
-      </button>
+      <div className="btn-group btn-group-sm">
+        <button className="btn btn-primary mt-3" onClick={onAvatarClick}>
+          Set as avatar
+        </button>
+        <button className="btn btn-danger mt-3" onClick={onDeleteClick}>
+          Delete
+        </button>
+      </div>
     </div>
   );
 };

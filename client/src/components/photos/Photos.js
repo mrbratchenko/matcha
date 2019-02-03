@@ -5,14 +5,12 @@ import PropTypes from "prop-types";
 import {
   uploadPhoto,
   getCurrentProfile,
-  deletePhoto
+  deletePhoto,
+  setAvatar
 } from "../../actions/profileActions";
 import Photo from "../common/Photo";
 import classnames from "classnames";
 import Spinner from "../common/Spinner";
-import noPicture from "../../img/empty-photo.jpg";
-
-const images = require.context("../../user-photos", false);
 
 class Photos extends Component {
   constructor(props) {
@@ -40,8 +38,6 @@ class Photos extends Component {
   }
 
   onChange(e) {
-    // console.log("onChange");
-
     e.preventDefault();
 
     this.setState({ file: e.target.files[0] }, () => {
@@ -59,21 +55,15 @@ class Photos extends Component {
   }
 
   onDeleteClick(fileName) {
-    // console.log(fileName);
     this.props.deletePhoto(fileName);
   }
 
-  checkFile(photos) {
-    photos.map(photo => {
-      try {
-        images("./" + photo);
-      } catch (e) {
-        if (e instanceof Error && e.code === "MODULE_NOT_FOUND") {
-          return false;
-        }
-      }
-    });
-    return true;
+  onAvatarClick(fileName) {
+    this.props.setAvatar(fileName, this.props.auth);
+    console.log(this.state);
+    // this.setState({
+    //   auth: this.props.auth;
+    // })
   }
 
   render() {
@@ -81,24 +71,22 @@ class Photos extends Component {
 
     const { profile, loading } = this.props.profile;
 
-    // console.log(images);
     let photoContent;
 
     if (profile === null || loading) {
       photoContent = <Spinner />;
-      // } else if (!this.checkFile(profile.photos)) {
-      //   console.log("failed");
-      //   photoContent = <Spinner />;
     } else {
       if (profile.photos && profile.photos.length > 0) {
         photoContent = (
           <div className="row pt-md-5">
-            {profile.photos.map(photo => (
+            {profile.photos.map((photo, index) => (
               <Photo
                 key={photo}
-                source={photo}
+                index={index}
+                source={profile.photos}
                 alt="profile_image"
                 onDeleteClick={this.onDeleteClick.bind(this, photo)}
+                onAvatarClick={this.onAvatarClick.bind(this, photo)}
               />
             ))}
           </div>
@@ -111,7 +99,7 @@ class Photos extends Component {
         );
       }
     }
-    console.log(errors.format);
+
     return (
       <div className="add-pictures">
         <Link to="/dashboard" className="btn btn-secondary">
@@ -143,6 +131,7 @@ class Photos extends Component {
 Photos.propTypes = {
   uploadPhoto: PropTypes.func.isRequired,
   deletePhoto: PropTypes.func.isRequired,
+  setAvatar: PropTypes.func.isRequired,
   getCurrentProfile: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
@@ -156,5 +145,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { uploadPhoto, getCurrentProfile, deletePhoto }
+  { uploadPhoto, getCurrentProfile, deletePhoto, setAvatar }
 )(withRouter(Photos));

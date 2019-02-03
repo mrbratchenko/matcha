@@ -66,18 +66,31 @@ export const createProfile = (profileData, history) => dispatch => {
     );
 };
 
-function sleeper(ms) {
-  return function(x) {
-    return new Promise(resolve => setTimeout(() => resolve(x), ms));
-  };
-}
-
 // upload photo
 export const uploadPhoto = (formData, config) => dispatch => {
   dispatch(clearErrors());
+
   axios
     .post("/api/profile/photos", formData, config)
-    .then(sleeper(10000))
+
+    .then(res => {
+      dispatch({
+        type: GET_PROFILE,
+        payload: res.data
+      });
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+// delete photo
+export const deletePhoto = fileName => dispatch => {
+  axios
+    .delete(`/api/profile/photos/${fileName}`)
     .then(res =>
       dispatch({
         type: GET_PROFILE,
@@ -92,11 +105,10 @@ export const uploadPhoto = (formData, config) => dispatch => {
     );
 };
 
-// delete photo
-export const deletePhoto = fileName => dispatch => {
-  dispatch(clearErrors());
+// set avatar pic
+export const setAvatar = (fileName, user) => dispatch => {
   axios
-    .delete(`/api/profile/photos/${fileName}`)
+    .post(`/api/profile/photos/avatar/${fileName}`, user)
     .then(res =>
       dispatch({
         type: GET_PROFILE,

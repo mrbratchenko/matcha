@@ -133,7 +133,8 @@ router.post("/login", (req, res) => {
           const payload = {
             id: user._id,
             name: user.name,
-            username: user.username
+            username: user.username,
+            avatar: user.avatar
           };
           // sign token
           jwt.sign(payload, keys.jwtKey, { expiresIn: 7200 }, (err, token) => {
@@ -291,10 +292,12 @@ router.get(
   "/current",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log("called");
     res.json({
       id: req.user._id,
       name: req.user.name,
-      email: req.user.email
+      email: req.user.email,
+      avatar: req.user.avatar
     });
   }
 );

@@ -8,6 +8,7 @@ import {
 const initialState = {
   profile: null,
   profiles: null,
+  context: null,
   loading: false
 };
 

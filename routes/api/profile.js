@@ -36,32 +36,32 @@ router.get(
   }
 );
 
-// @route   GET api/profile/photos
-// @desc    Get profile photos
-// @access  Private
-router.get(
-  "/photos",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    const errors = {};
+// // @route   GET api/profile/photos
+// // @desc    Get profile photos
+// // @access  Private
+// router.get(
+//   "/photos",
+//   passport.authenticate("jwt", { session: false }),
+//   (req, res) => {
+//     const errors = {};
 
-    db.collection("users")
-      .findOne(
-        {
-          _id: req.user._id
-        },
-        { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
-      )
-      .then(profile => {
-        if (!profile) {
-          errors.profile = "There is no profile for this user";
-          return res.status(404).json(errors);
-        }
-        res.json(profile);
-      })
-      .catch(err => console.log(err));
-  }
-);
+//     db.collection("users")
+//       .findOne(
+//         {
+//           _id: req.user._id
+//         },
+//         { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
+//       )
+//       .then(profile => {
+//         if (!profile) {
+//           errors.profile = "There is no profile for this user";
+//           return res.status(404).json(errors);
+//         }
+//         res.json(profile);
+//       })
+//       .catch(err => console.log(err));
+//   }
+// );
 
 // @route   GET api/profile/all
 // @desc    Get all profiles
@@ -240,7 +240,6 @@ router.post(
           .findOne({ _id: ObjectId(req.body.user) })
           .then(profile => {
             if (profile.photos && profile.photos.length > 4) {
-              console.log(profile.photos.length);
               errors.format = "You may upload 5 photos only";
               return res.status(404).json(errors);
             } else {
@@ -277,7 +276,6 @@ router.post(
           { returnOriginal: false }
         )
         .then(profile => {
-          console.log("written to db");
           res.json(profile.value);
         });
     });
@@ -285,7 +283,7 @@ router.post(
 );
 
 // @route   DELETE api/profile/:photo_id
-// @desc    Delete pictures from profile
+// @desc    Delete a picture from profile
 // @access  Private
 router.delete(
   "/photos/:file",
@@ -302,12 +300,40 @@ router.delete(
         }
       )
       .then(profile => {
+        db.collection("users").findOneAndUpdate(
+          { avatar: req.params.file },
+          { $set: { avatar: "" } }
+        );
         const filePath = `./client/src/user-photos/${req.params.file}`;
         fs.unlinkSync(filePath);
         console.log(profile.value);
         res.json(profile.value);
       })
       .catch(err => res.status(404).json({ nophotofound: "No photo found" }));
+  }
+);
+
+// @route   PPOST api/profile/avatar/:photo_id
+// @desc    Set avatar for profile
+// @access  Private
+router.post(
+  "/photos/avatar/:file",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // console.log(req.user);
+    // Get remove index
+    db.collection("users")
+      .findOneAndUpdate(
+        {
+          _id: req.user._id
+        },
+        { $set: { avatar: req.params.file } },
+        { returnOriginal: false }
+      )
+      .then(profile => {
+        res.json(profile.value);
+      })
+      .catch(err => res.status(404).json(err));
   }
 );
 

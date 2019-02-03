@@ -19,10 +19,7 @@ const url = require("./config/keys").mongoURI;
 const MongoClient = require("mongodb").MongoClient;
 
 // DB connect
-MongoClient.connect(
-  url,
-  { useNewUrlParser: true }
-)
+MongoClient.connect(url, { useNewUrlParser: true })
   .then(client => {
     console.log("DB connected");
     db = client.db("matcha");
