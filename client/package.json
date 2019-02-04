@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "babel-loader": "^8.0.5",
     "classnames": "^2.2.6",
     "growl": "^1.10.5",
     "jasmine-node": "^2.0.1",
@@ -12,6 +13,7 @@
     "query-string": "^6.2.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
+    "react-modal-image": "^2.3.2",
     "react-moment": "^0.8.4",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",

@@ -36,33 +36,6 @@ router.get(
   }
 );
 
-// // @route   GET api/profile/photos
-// // @desc    Get profile photos
-// // @access  Private
-// router.get(
-//   "/photos",
-//   passport.authenticate("jwt", { session: false }),
-//   (req, res) => {
-//     const errors = {};
-
-//     db.collection("users")
-//       .findOne(
-//         {
-//           _id: req.user._id
-//         },
-//         { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
-//       )
-//       .then(profile => {
-//         if (!profile) {
-//           errors.profile = "There is no profile for this user";
-//           return res.status(404).json(errors);
-//         }
-//         res.json(profile);
-//       })
-//       .catch(err => console.log(err));
-//   }
-// );
-
 // @route   GET api/profile/all
 // @desc    Get all profiles
 // @access  Public

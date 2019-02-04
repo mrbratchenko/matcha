@@ -11,7 +11,6 @@ import {
 import Photo from "../common/Photo";
 import classnames from "classnames";
 import Spinner from "../common/Spinner";
-// import ModalImage from "react-modal-image";
 
 class Photos extends Component {
   constructor(props) {
@@ -19,7 +18,9 @@ class Photos extends Component {
     this.state = {
       errors: {},
       imagePreviewUrl: null,
-      file: null
+      file: null,
+      modal: "none",
+      modal_src: null
     };
     this.onChange = this.onChange.bind(this);
     this.onUpload = this.onUpload.bind(this);
@@ -53,7 +54,7 @@ class Photos extends Component {
       ) {
         this.setState({
           imagePreviewUrl: reader.result,
-          errors: { success: "File looks good! Here is the preview:" }
+          errors: { success: "Image looks good! Below is the preview" }
         });
       } else {
         this.setState({
@@ -83,6 +84,14 @@ class Photos extends Component {
     this.props.deletePhoto(fileName);
   }
 
+  onImageClick(modal_src) {
+    this.setState({
+      modal_src,
+      modal: "block"
+    });
+    console.log(this.state.modal_src);
+  }
+
   onAvatarClick(fileName) {
     this.props.setAvatar(fileName, this.props.auth);
   }
@@ -96,7 +105,6 @@ class Photos extends Component {
     let previewContent;
     const { imagePreviewUrl } = this.state;
 
-    console.log(this.state.file);
     if (profile === null || loading) {
       photoContent = <Spinner />;
     } else {
@@ -108,9 +116,9 @@ class Photos extends Component {
                 key={photo}
                 index={index}
                 source={profile.photos}
-                alt="profile_image"
                 onDeleteClick={this.onDeleteClick.bind(this, photo)}
                 onAvatarClick={this.onAvatarClick.bind(this, photo)}
+                onImageClick={this.onImageClick.bind(this, photo)}
               />
             ))}
           </div>
@@ -142,7 +150,8 @@ class Photos extends Component {
                 className="btn btn-danger mt-3"
                 onClick={() => {
                   this.setState(prevState => ({
-                    imagePreviewUrl: !prevState.imagePreviewUrl
+                    imagePreviewUrl: !prevState.imagePreviewUrl,
+                    errors: {}
                   }));
                 }}
               >
@@ -182,6 +191,26 @@ class Photos extends Component {
         </div>
         {previewContent}
         {photoContent}
+
+        <div
+          className="modal"
+          style={{ display: this.state.modal }}
+          onClick={() => {
+            this.setState({
+              modal: "none"
+            });
+          }}
+        >
+          <img
+            className="modal-content"
+            alt="preview"
+            src={
+              this.state.modal_src
+                ? require(`../../user-photos/${this.state.modal_src}`)
+                : null
+            }
+          />
+        </div>
       </div>
     );
   }

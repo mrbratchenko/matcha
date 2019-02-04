@@ -2,19 +2,29 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import isEmpty from "../../validation/is-empty";
+import noAvatar from "../../img/no-avatar.png";
 
 class ProfileItem extends Component {
   render() {
     const { profile } = this.props;
-
+    console.log(profile);
     return (
       <div className="card card-body bg-light mb-3">
         <div className="row">
           <div className="col-2">
-            <img src={profile.user.avatar} alt="" className="rounded-circle" />
+            <img
+              src={
+                profile.avatar
+                  ? require(`../../user-photos/${profile.avatar}`)
+                  : null
+              }
+              alt={noAvatar}
+              className="rounded-circle mt-4"
+              style={{ height: "15vmin" }}
+            />
           </div>
           <div className="col-lg-6 col-md-4 col-8">
-            <h3>{profile.user.name}</h3>
+            <h3>{profile.name}</h3>
             <p>
               {profile.gender}
               {isEmpty(profile.company) ? null : (
@@ -31,7 +41,7 @@ class ProfileItem extends Component {
             </Link>
           </div>
           <div className="col-md-4 d-none d-md-block">
-            <h4>Skill set</h4>
+            <h4>Interests</h4>
             <ul className="list-group">
               {profile.interests.slice(0, 4).map((skill, index) => (
                 <li key={index} className="list-group-item">

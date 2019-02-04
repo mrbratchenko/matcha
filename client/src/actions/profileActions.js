@@ -69,6 +69,7 @@ export const createProfile = (profileData, history) => dispatch => {
 // upload photo
 export const uploadPhoto = (formData, config) => dispatch => {
   dispatch(clearErrors());
+
   axios
     .post("/api/profile/photos", formData, config)
 
@@ -88,20 +89,22 @@ export const uploadPhoto = (formData, config) => dispatch => {
 
 // delete photo
 export const deletePhoto = fileName => dispatch => {
-  axios
-    .delete(`/api/profile/photos/${fileName}`)
-    .then(res =>
-      dispatch({
-        type: GET_PROFILE,
-        payload: res.data
-      })
-    )
-    .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
-    );
+  if (window.confirm("Are you sure? This action cannot be undone")) {
+    axios
+      .delete(`/api/profile/photos/${fileName}`)
+      .then(res =>
+        dispatch({
+          type: GET_PROFILE,
+          payload: res.data
+        })
+      )
+      .catch(err =>
+        dispatch({
+          type: GET_ERRORS,
+          payload: err.response.data
+        })
+      );
+  }
 };
 
 // set avatar pic

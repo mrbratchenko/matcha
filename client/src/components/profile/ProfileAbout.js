@@ -24,10 +24,12 @@ class ProfileAbout extends Component {
             <p className="lead">
               {isEmpty(profile.bio) ? (
                 <span>{firstName} does not have a bio</span>
-              ) : null}
+              ) : (
+                profile.bio
+              )}
             </p>
             <hr />
-            <h3 className="text-center text-info">Skill Set</h3>
+            <h3 className="text-center text-info">Interests</h3>
             <div className="row">
               <div className="d-flex flex-wrap justify-content-center align-items-center" />
               {interests}

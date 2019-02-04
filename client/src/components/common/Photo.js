@@ -1,7 +1,13 @@
 import React from "react";
 // import noPicture from "../../img/ring-loader.gif";
 
-const Photo = ({ source, index, alt, onDeleteClick, onAvatarClick }) => {
+const Photo = ({
+  source,
+  index,
+  onDeleteClick,
+  onAvatarClick,
+  onImageClick
+}) => {
   let im;
 
   try {
@@ -16,10 +22,12 @@ const Photo = ({ source, index, alt, onDeleteClick, onAvatarClick }) => {
   return (
     <div className="col-lg-2 col-md-2 col-xs-2 thumb">
       <img
+        href=""
         className="img-thumbnail"
         src={im}
-        alt={alt}
+        alt="profile_image"
         style={{ height: "120px", width: "auto" }}
+        onClick={onImageClick}
       />
       <div className="btn-group btn-group-sm">
         <button className="btn btn-primary mt-3" onClick={onAvatarClick}>
