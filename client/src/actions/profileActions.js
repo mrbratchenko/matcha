@@ -69,7 +69,6 @@ export const createProfile = (profileData, history) => dispatch => {
 // upload photo
 export const uploadPhoto = (formData, config) => dispatch => {
   dispatch(clearErrors());
-
   axios
     .post("/api/profile/photos", formData, config)
 

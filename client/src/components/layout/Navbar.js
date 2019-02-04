@@ -38,10 +38,11 @@ class Navbar extends Component {
             Dashboard
           </Link>
         </li>
-        <li className="nav-item mt-1">
-          <button
+        <li className="nav-item">
+          <Link
+            to="/"
+            className="nav-link"
             onClick={this.onLogoutClick.bind(this)}
-            className="nav-link button"
           >
             <img
               className="rounded-circle"
@@ -52,14 +53,14 @@ class Navbar extends Component {
               }
               alt={user.name}
               style={{
-                width: "35px",
-                height: "35px",
+                width: "25px",
+                height: "25px",
                 marginRight: "5px"
               }}
             />
             {""}
             Logout
-          </button>
+          </Link>
         </li>
       </ul>
     );

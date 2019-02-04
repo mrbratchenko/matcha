@@ -11,15 +11,18 @@ import {
 import Photo from "../common/Photo";
 import classnames from "classnames";
 import Spinner from "../common/Spinner";
+// import ModalImage from "react-modal-image";
 
 class Photos extends Component {
   constructor(props) {
     super(props);
     this.state = {
       errors: {},
+      imagePreviewUrl: null,
       file: null
     };
     this.onChange = this.onChange.bind(this);
+    this.onUpload = this.onUpload.bind(this);
   }
 
   componentDidMount() {
@@ -38,20 +41,42 @@ class Photos extends Component {
   }
 
   onChange(e) {
-    e.preventDefault();
+    this.setState({ file: e.target.files[0] });
+    const reader = new FileReader();
+    const file = e.target.files[0];
 
-    this.setState({ file: e.target.files[0] }, () => {
-      const { user } = this.props.auth;
-      const photoData = new FormData();
-      photoData.append("user", user.id);
-      photoData.append("userPhoto", this.state.file);
-      const config = {
-        headers: {
-          "content-type": "multipart/form-data"
-        }
-      };
-      this.props.uploadPhoto(photoData, config);
-    });
+    reader.onloadend = () => {
+      if (
+        file.type === "image/jpeg" ||
+        file.type === "image/png" ||
+        file.type === "image/bmp"
+      ) {
+        this.setState({
+          imagePreviewUrl: reader.result,
+          errors: { success: "File looks good! Here is the preview:" }
+        });
+      } else {
+        this.setState({
+          errors: { format: "Please use .jpg, .png or .bmp format" }
+        });
+      }
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  onUpload(e) {
+    e.preventDefault();
+    const { user } = this.props.auth;
+    const photoData = new FormData();
+    photoData.append("user", user.id);
+    photoData.append("userPhoto", this.state.file);
+    const config = {
+      headers: {
+        "content-type": "multipart/form-data"
+      }
+    };
+    this.props.uploadPhoto(photoData, config);
   }
 
   onDeleteClick(fileName) {
@@ -60,10 +85,6 @@ class Photos extends Component {
 
   onAvatarClick(fileName) {
     this.props.setAvatar(fileName, this.props.auth);
-    console.log(this.state);
-    // this.setState({
-    //   auth: this.props.auth;
-    // })
   }
 
   render() {
@@ -72,7 +93,10 @@ class Photos extends Component {
     const { profile, loading } = this.props.profile;
 
     let photoContent;
+    let previewContent;
+    const { imagePreviewUrl } = this.state;
 
+    console.log(this.state.file);
     if (profile === null || loading) {
       photoContent = <Spinner />;
     } else {
@@ -98,6 +122,36 @@ class Photos extends Component {
           </div>
         );
       }
+
+      if (imagePreviewUrl) {
+        previewContent = (
+          <div className="preview-content">
+            <div className="preview-pic">
+              <img
+                className="img-thumbnail mt-3"
+                src={imagePreviewUrl}
+                alt="preview"
+                style={{ width: "500px", height: "auto" }}
+              />
+            </div>
+            <div className="btn-group">
+              <button className="btn btn-success mt-3" onClick={this.onUpload}>
+                Upload
+              </button>
+              <button
+                className="btn btn-danger mt-3"
+                onClick={() => {
+                  this.setState(prevState => ({
+                    imagePreviewUrl: !prevState.imagePreviewUrl
+                  }));
+                }}
+              >
+                Discard
+              </button>
+            </div>
+          </div>
+        );
+      }
     }
 
     return (
@@ -111,7 +165,8 @@ class Photos extends Component {
             type="file"
             name="userPhoto"
             className={classnames("custom-file-input", {
-              "is-invalid": errors.format
+              "is-invalid": errors.format,
+              "is-valid": errors.success
             })}
             onChange={this.onChange}
           />
@@ -121,7 +176,11 @@ class Photos extends Component {
           {errors.format && (
             <div className="invalid-feedback">{errors.format}</div>
           )}
+          {errors.success && (
+            <div className="valid-feedback">{errors.success}</div>
+          )}
         </div>
+        {previewContent}
         {photoContent}
       </div>
     );
