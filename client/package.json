@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
-    "babel-loader": "^8.0.5",
     "classnames": "^2.2.6",
     "growl": "^1.10.5",
     "jasmine-node": "^2.0.1",

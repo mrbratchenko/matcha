@@ -31,6 +31,7 @@ export default function(state = initialState, action) {
         profiles: action.payload,
         loading: false
       };
+
     case CLEAR_CURRENT_PROFILE:
       return {
         ...state,

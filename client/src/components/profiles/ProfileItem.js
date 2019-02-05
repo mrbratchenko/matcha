@@ -16,11 +16,11 @@ class ProfileItem extends Component {
               src={
                 profile.avatar
                   ? require(`../../user-photos/${profile.avatar}`)
-                  : null
+                  : noAvatar
               }
               alt={noAvatar}
               className="rounded-circle mt-4"
-              style={{ height: "15vmin" }}
+              style={{ height: "12vmin" }}
             />
           </div>
           <div className="col-lg-6 col-md-4 col-8">

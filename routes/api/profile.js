@@ -286,30 +286,6 @@ router.delete(
   }
 );
 
-// @route   PPOST api/profile/avatar/:photo_id
-// @desc    Set avatar for profile
-// @access  Private
-router.post(
-  "/photos/avatar/:file",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    // console.log(req.user);
-    // Get remove index
-    db.collection("users")
-      .findOneAndUpdate(
-        {
-          _id: req.user._id
-        },
-        { $set: { avatar: req.params.file } },
-        { returnOriginal: false }
-      )
-      .then(profile => {
-        res.json(profile.value);
-      })
-      .catch(err => res.status(404).json(err));
-  }
-);
-
 // @route   DELETE api/profile/
 // @desc    Delete user and profile
 // @access  Private

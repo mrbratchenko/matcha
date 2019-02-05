@@ -133,8 +133,7 @@ router.post("/login", (req, res) => {
           const payload = {
             id: user._id,
             name: user.name,
-            username: user.username,
-            avatar: user.avatar
+            username: user.username
           };
 
           // sign token
@@ -299,6 +298,30 @@ router.get(
       email: req.user.email,
       avatar: req.user.avatar
     });
+  }
+);
+
+// @route   PPOST api/profile/avatar/:photo_id
+// @desc    Set avatar for profile
+// @access  Private
+router.post(
+  "/avatar/:file",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    console.log(req.user);
+    // Get remove index
+    db.collection("users")
+      .findOneAndUpdate(
+        {
+          _id: req.user._id
+        },
+        { $set: { avatar: req.params.file } },
+        { returnOriginal: false }
+      )
+      .then(profile => {
+        res.json(profile.value);
+      })
+      .catch(err => res.status(404).json(err));
   }
 );
 

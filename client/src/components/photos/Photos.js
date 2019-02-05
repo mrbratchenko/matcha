@@ -5,9 +5,9 @@ import PropTypes from "prop-types";
 import {
   uploadPhoto,
   getCurrentProfile,
-  deletePhoto,
-  setAvatar
+  deletePhoto
 } from "../../actions/profileActions";
+import { setAvatar } from "../../actions/authActions";
 import Photo from "../common/Photo";
 import classnames from "classnames";
 import Spinner from "../common/Spinner";
@@ -20,7 +20,7 @@ class Photos extends Component {
       imagePreviewUrl: null,
       file: null,
       modal: "none",
-      modal_src: null
+      modalSrc: null
     };
     this.onChange = this.onChange.bind(this);
     this.onUpload = this.onUpload.bind(this);
@@ -84,20 +84,27 @@ class Photos extends Component {
     this.props.deletePhoto(fileName);
   }
 
-  onImageClick(modal_src) {
+  onImageClick(modalSrc) {
     this.setState({
-      modal_src,
+      modalSrc,
       modal: "block"
     });
-    console.log(this.state.modal_src);
   }
 
   onAvatarClick(fileName) {
     this.props.setAvatar(fileName, this.props.auth);
   }
 
+  onModalClick(modalSrc) {
+    this.setState({
+      modalSrc,
+      modal: "none"
+    });
+    console.log("onModalClick");
+  }
+
   render() {
-    const { errors } = this.state;
+    const { errors, modalSrc } = this.state;
 
     const { profile, loading } = this.props.profile;
 
@@ -191,7 +198,6 @@ class Photos extends Component {
         </div>
         {previewContent}
         {photoContent}
-
         <div
           className="modal"
           style={{ display: this.state.modal }}
@@ -204,11 +210,7 @@ class Photos extends Component {
           <img
             className="modal-content"
             alt="preview"
-            src={
-              this.state.modal_src
-                ? require(`../../user-photos/${this.state.modal_src}`)
-                : null
-            }
+            src={modalSrc ? require(`../../user-photos/${modalSrc}`) : null}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import isEmpty from "../../validation/is-empty";
+import noAvatar from "../../img/no-avatar.png";
 
 class ProfileHeader extends Component {
   render() {
@@ -13,8 +14,13 @@ class ProfileHeader extends Component {
               <div className="col-4 col-md-3 m-auto">
                 <img
                   className="rounded-circle"
-                  src={require(`../../user-photos/${profile.avatar}`)}
+                  src={
+                    profile && profile.avatar
+                      ? require(`../../user-photos/${profile.avatar}`)
+                      : noAvatar
+                  }
                   alt="avatar"
+                  style={{ height: "20vmin" }}
                 />
               </div>
             </div>

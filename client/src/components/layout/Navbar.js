@@ -26,6 +26,17 @@ class Navbar extends Component {
     const { profile } = this.props.profile;
     console.log(user);
 
+    // let im;
+
+    // try {
+    //   im = require(`../../user-photos/${source[index]}`);
+    // } catch (e) {
+    //   if (e instanceof Error && e.code === "MODULE_NOT_FOUND") {
+    //     im = noAvatar;
+    //     // return null;
+    //   }
+    // }
+
     // console.log(profile);
     const authLinks = (
       <ul className="navbar-nav ml-auto">
@@ -48,8 +59,8 @@ class Navbar extends Component {
             <img
               className="rounded-circle"
               src={
-                profile && profile.avatar
-                  ? require(`../../user-photos/${profile.avatar}`)
+                user && user.avatar
+                  ? require(`../../user-photos/${user.avatar}`)
                   : noAvatar
               }
               alt={user.name}

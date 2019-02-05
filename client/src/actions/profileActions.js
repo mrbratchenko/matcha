@@ -7,7 +7,8 @@ import {
   CLEAR_CURRENT_PROFILE,
   GET_ERRORS,
   SET_CURRENT_USER,
-  CLEAR_ERRORS
+  CLEAR_ERRORS,
+  SET_CURRENT_USER_AVATAR
 } from "./types";
 
 // Get username
@@ -105,24 +106,6 @@ export const deletePhoto = fileName => dispatch => {
         })
       );
   }
-};
-
-// set avatar pic
-export const setAvatar = (fileName, user) => dispatch => {
-  axios
-    .post(`/api/profile/photos/avatar/${fileName}`, user)
-    .then(res =>
-      dispatch({
-        type: GET_PROFILE,
-        payload: res.data
-      })
-    )
-    .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
-    );
 };
 
 // Delete account and profile

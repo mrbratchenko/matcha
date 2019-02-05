@@ -2,7 +2,12 @@ import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
 
-import { GET_ERRORS, SET_CURRENT_USER, CLEAR_ERRORS } from "./types";
+import {
+  GET_ERRORS,
+  SET_CURRENT_USER,
+  CLEAR_ERRORS,
+  SET_CURRENT_USER_AVATAR
+} from "./types";
 
 // Register user
 export const registerUser = (userData, history) => dispatch => {
@@ -114,4 +119,22 @@ export const clearErrors = () => {
   return {
     type: CLEAR_ERRORS
   };
+};
+
+// set avatar pic
+export const setAvatar = (fileName, user) => dispatch => {
+  axios
+    .post(`/api/users/avatar/${fileName}`, user)
+    .then(res =>
+      dispatch({
+        type: SET_CURRENT_USER_AVATAR,
+        payload: res.data.avatar
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
 };
