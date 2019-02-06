@@ -6,19 +6,20 @@ import {
   GET_ERRORS,
   SET_CURRENT_USER,
   CLEAR_ERRORS,
-  SET_CURRENT_USER_AVATAR
+  SET_CURRENT_USER_AVATAR,
+  GET_NOTICE
 } from "./types";
 
 // Register user
 export const registerUser = (userData, history) => dispatch => {
   axios
     .post("/api/users/register", userData)
-    .then(res => {
-      window.alert(
-        "Success! Please check your email for an account activation link."
-      );
-      history.push("/login");
-    })
+    .then(res =>
+      dispatch({
+        type: GET_NOTICE,
+        payload: "Success! Please check your email for account activation link."
+      })
+    )
     .catch(err =>
       dispatch({
         type: GET_ERRORS,

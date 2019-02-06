@@ -7,7 +7,8 @@ import {
   GET_POST,
   POST_LOADING,
   DELETE_POST,
-  CLEAR_ERRORS
+  CLEAR_ERRORS,
+  GET_NOTICE
 } from "./types";
 
 // Add post
@@ -19,12 +20,17 @@ export const addPost = postData => dispatch => {
       dispatch({
         type: ADD_POST,
         payload: res.data
-      })
+      }).then(
+        dispatch({
+          type: GET_NOTICE,
+          payload: "sdfasdfd"
+        })
+      )
     )
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
-        payload: err.response.data
+        payload: err
       })
     );
 };

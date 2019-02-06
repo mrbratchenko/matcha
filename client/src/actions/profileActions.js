@@ -8,7 +8,7 @@ import {
   GET_ERRORS,
   SET_CURRENT_USER,
   CLEAR_ERRORS,
-  SET_CURRENT_USER_AVATAR
+  GET_NOTICE
 } from "./types";
 
 // Get username
@@ -70,7 +70,7 @@ export const createProfile = (profileData, history) => dispatch => {
 // upload photo
 export const uploadPhoto = (formData, config) => dispatch => {
   dispatch(clearErrors());
-
+  dispatch(getNotice());
   axios
     .post("/api/profile/photos", formData, config)
 
@@ -94,10 +94,16 @@ export const deletePhoto = fileName => dispatch => {
     axios
       .delete(`/api/profile/photos/${fileName}`)
       .then(res =>
-        dispatch({
-          type: GET_PROFILE,
-          payload: res.data
-        })
+        dispatch(
+          {
+            type: GET_PROFILE,
+            payload: res.data
+          },
+          {
+            type: GET_NOTICE,
+            payload: "photo has been deleted"
+          }
+        )
       )
       .catch(err =>
         dispatch({
@@ -165,5 +171,13 @@ export const getProfiles = () => dispatch => {
 export const clearErrors = () => {
   return {
     type: CLEAR_ERRORS
+  };
+};
+
+// Notice
+export const getNotice = () => {
+  return {
+    type: GET_NOTICE,
+    payload: "added"
   };
 };

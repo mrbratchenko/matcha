@@ -14,7 +14,8 @@ class Register extends Component {
       email: "",
       password: "",
       password2: "",
-      errors: {}
+      errors: {},
+      notice: ""
     };
 
     this.onChange = this.onChange.bind(this);
@@ -30,6 +31,17 @@ class Register extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
+    }
+    if (nextProps.notice) {
+      this.setState({
+        notice: nextProps.notice,
+        name: "",
+        username: "",
+        email: "",
+        password: "",
+        password2: "",
+        errors: {}
+      });
     }
   }
 
@@ -52,7 +64,7 @@ class Register extends Component {
   }
 
   render() {
-    const { errors } = this.state; // same: const errors = this.state.errors
+    const { errors, notice } = this.state; // same: const errors = this.state.errors
 
     return (
       <div>
@@ -60,6 +72,23 @@ class Register extends Component {
           <div className="container">
             <div className="row">
               <div className="col-md-8 m-auto">
+                {notice && (
+                  <div
+                    className="alert alert-success alert-dismissible fade show"
+                    role="alert"
+                  >
+                    <strong>{notice}</strong>
+                    <button
+                      type="button"
+                      className="close"
+                      data-dismiss="alert"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                )}
+
                 <h1 className="display-4 text-center">Sign Up</h1>
                 <p className="lead text-center">Create your Matches account</p>
                 <form noValidate onSubmit={this.onSubmit}>
@@ -118,12 +147,14 @@ class Register extends Component {
 Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
+  notice: PropTypes.string.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth, //auth comes from reducers/index.js
-  errors: state.errors
+  errors: state.errors,
+  notice: state.notice
 });
 
 export default connect(

@@ -6,7 +6,7 @@ export const PROFILE_NOT_FOUND = "PROFILE_NOT_FOUND";
 export const CLEAR_CURRENT_PROFILE = "CLEAR_CURRENT_PROFILE";
 export const GET_PROFILES = "GET_PROFILES";
 export const SET_CURRENT_USER_AVATAR = "SET_CURRENT_USER_AVATAR";
-
+export const GET_NOTICE = "GET_NOTICE";
 export const POST_LOADING = "POST_LOADING";
 export const GET_POSTS = "GET_POSTS";
 export const GET_POST = "GET_POST";

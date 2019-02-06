@@ -24,18 +24,16 @@ class Navbar extends Component {
   render() {
     const { isAuthenticated, user } = this.props.auth;
     const { profile } = this.props.profile;
-    console.log(user);
 
-    // let im;
+    let avatar;
 
-    // try {
-    //   im = require(`../../user-photos/${source[index]}`);
-    // } catch (e) {
-    //   if (e instanceof Error && e.code === "MODULE_NOT_FOUND") {
-    //     im = noAvatar;
-    //     // return null;
-    //   }
-    // }
+    if (user && user.avatar) {
+      avatar = require(`../../user-photos/${user.avatar}`);
+    } else if (profile && profile.avatar) {
+      avatar = require(`../../user-photos/${profile.avatar}`);
+    } else {
+      avatar = noAvatar;
+    }
 
     // console.log(profile);
     const authLinks = (
@@ -58,11 +56,7 @@ class Navbar extends Component {
           >
             <img
               className="rounded-circle"
-              src={
-                user && user.avatar
-                  ? require(`../../user-photos/${user.avatar}`)
-                  : noAvatar
-              }
+              src={avatar}
               alt={user.name}
               style={{
                 width: "25px",
