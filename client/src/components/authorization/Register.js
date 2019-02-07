@@ -4,6 +4,8 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import TextFieldGroup from "../common/TextFieldGroup";
+import Alert from "../common/Alert";
+import Spinner from "../common/Spinner";
 
 class Register extends Component {
   constructor() {
@@ -15,7 +17,7 @@ class Register extends Component {
       password: "",
       password2: "",
       errors: {},
-      notice: ""
+      notice: {}
     };
 
     this.onChange = this.onChange.bind(this);
@@ -32,15 +34,18 @@ class Register extends Component {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
-    if (nextProps.notice) {
+    if (
+      (nextProps.notice.success || nextProps.notice.fail) &&
+      !nextProps.notice.loading
+    ) {
       this.setState({
         notice: nextProps.notice,
         name: "",
         username: "",
         email: "",
         password: "",
-        password2: "",
-        errors: {}
+        password2: ""
+        // errors: {}
       });
     }
   }
@@ -64,31 +69,18 @@ class Register extends Component {
   }
 
   render() {
-    const { errors, notice } = this.state; // same: const errors = this.state.errors
-
+    const { errors } = this.state;
+    const { notice } = this.props;
+    const { loading } = this.props.notice;
+    console.log(loading);
     return (
       <div>
         <div className="register">
           <div className="container">
             <div className="row">
               <div className="col-md-8 m-auto">
-                {notice && (
-                  <div
-                    className="alert alert-success alert-dismissible fade show"
-                    role="alert"
-                  >
-                    <strong>{notice}</strong>
-                    <button
-                      type="button"
-                      className="close"
-                      data-dismiss="alert"
-                      aria-label="Close"
-                    >
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                )}
-
+                {loading && !Object.entries(errors).length && <Spinner />}
+                <Alert notice={notice} />
                 <h1 className="display-4 text-center">Sign Up</h1>
                 <p className="lead text-center">Create your Matches account</p>
                 <form noValidate onSubmit={this.onSubmit}>
@@ -148,7 +140,7 @@ Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
-  notice: PropTypes.string.isRequired
+  notice: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({

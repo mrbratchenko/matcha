@@ -7,9 +7,10 @@ export default function Spinner() {
       <img
         src={loading}
         style={{
-          width: "100px",
-          dislay: "block",
-          margin: "auto"
+          width: "20%",
+          display: "block",
+          marginLeft: "auto",
+          marginRight: "auto"
         }}
         alt="Loading..."
       />

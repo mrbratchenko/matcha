@@ -7,17 +7,22 @@ import {
   SET_CURRENT_USER,
   CLEAR_ERRORS,
   SET_CURRENT_USER_AVATAR,
-  GET_NOTICE
+  SET_NOTICE,
+  CLEAR_NOTICE,
+  NOTICE_LOADING
 } from "./types";
 
 // Register user
 export const registerUser = (userData, history) => dispatch => {
+  dispatch(clearErrors());
+  dispatch(clearNotice());
+  dispatch(setNoticeLoading());
   axios
     .post("/api/users/register", userData)
     .then(res =>
       dispatch({
-        type: GET_NOTICE,
-        payload: "Success! Please check your email for account activation link."
+        type: SET_NOTICE,
+        payload: res.data
       })
     )
     .catch(err =>
@@ -122,6 +127,12 @@ export const clearErrors = () => {
   };
 };
 
+export const clearNotice = () => {
+  return {
+    type: CLEAR_NOTICE
+  };
+};
+
 // set avatar pic
 export const setAvatar = (fileName, user) => dispatch => {
   axios
@@ -138,4 +149,10 @@ export const setAvatar = (fileName, user) => dispatch => {
         payload: err.response.data
       })
     );
+};
+
+export const setNoticeLoading = () => {
+  return {
+    type: NOTICE_LOADING
+  };
 };

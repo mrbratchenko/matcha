@@ -8,7 +8,7 @@ import {
   POST_LOADING,
   DELETE_POST,
   CLEAR_ERRORS,
-  GET_NOTICE
+  SET_NOTICE
 } from "./types";
 
 // Add post
@@ -22,7 +22,7 @@ export const addPost = postData => dispatch => {
         payload: res.data
       }).then(
         dispatch({
-          type: GET_NOTICE,
+          type: SET_NOTICE,
           payload: "sdfasdfd"
         })
       )

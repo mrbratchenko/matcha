@@ -8,7 +8,7 @@ import {
   GET_ERRORS,
   SET_CURRENT_USER,
   CLEAR_ERRORS,
-  GET_NOTICE
+  SET_NOTICE
 } from "./types";
 
 // Get username
@@ -100,7 +100,7 @@ export const deletePhoto = fileName => dispatch => {
             payload: res.data
           },
           {
-            type: GET_NOTICE,
+            type: SET_NOTICE,
             payload: "photo has been deleted"
           }
         )
@@ -177,7 +177,7 @@ export const clearErrors = () => {
 // Notice
 export const getNotice = () => {
   return {
-    type: GET_NOTICE,
+    type: SET_NOTICE,
     payload: "added"
   };
 };

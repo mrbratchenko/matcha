@@ -54,12 +54,6 @@ router.post("/register", (req, res) => {
         bcrypt.hash(newUser.password, 10, (err, hash) => {
           if (err) throw err;
           newUser.password = hash;
-          db.collection("users")
-            .insertOne(newUser)
-            .then(user => {
-              res.json(user);
-            })
-            .catch(err => console.log(err));
 
           // Sending activation email
           var transporter = nodemailer.createTransport({
@@ -84,11 +78,24 @@ router.post("/register", (req, res) => {
               newUser.verificationCode +
               "\n- Matcha team.  "
           };
-          transporter.sendMail(mailOptions, function(error, info) {
+          transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
               console.log(error);
-            } else {
+              res.json({
+                fail: "Something went wrong :( Please try again"
+              });
+              return;
+            } else if (info.response) {
               console.log("Email sent: " + info.response);
+              db.collection("users")
+                .insertOne(newUser)
+                .then(
+                  res.json({
+                    success:
+                      "Success! Please check your email for account activation link."
+                  })
+                )
+                .catch(err => console.log(err));
             }
           });
         });
