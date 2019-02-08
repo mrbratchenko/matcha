@@ -72,7 +72,7 @@ router.post("/register", (req, res) => {
               newUser.name +
               "!\n" +
               "Please follow the link below to activate your account:\n" +
-              "http://localhost:3000/activation?email=" +
+              "http://localhost:3000/login?email=" +
               newUser.email +
               "&code=" +
               newUser.verificationCode +
@@ -115,9 +115,8 @@ router.post("/login", (req, res) => {
     return res.status(400).json(errors);
   }
 
-  const email = req.body.email;
   const password = req.body.password;
-
+  const notice = {};
   // find user by email
   db.collection("users")
     .findOne({ email: req.body.email })
@@ -165,7 +164,7 @@ router.post("/activation", (req, res) => {
   const email = req.body.email;
   const code = req.body.code;
 
-  const errors = {};
+  const notice = {};
   // find user by email
   db.collection("users")
     .findOne({
@@ -173,19 +172,21 @@ router.post("/activation", (req, res) => {
     })
     .then(user => {
       if (user && user.isVerified === true) {
-        errors.activation = "This account has already been activated.";
-        return res.status(400).json(errors);
+        notice.warning = "This account has already been activated.";
+        return res.status(200).json(notice);
       } else if (user && user.isVerified === false) {
         console.log(user);
         db.collection("users")
           .findOneAndUpdate({ email: email }, { $set: { isVerified: true } })
-          .then(user => res.json(user));
+          .then(user => console.log(user));
       } else {
-        errors.activation = "Something went wrong. Please try again later.";
-        return res.status(400).json(errors);
+        notice.fail = "Something went wrong. Please try again later.";
+        return res.status(200).json(notice);
       }
+      notice.success = "Your account has been activated.";
+      return res.status(200).json(notice);
     })
-    .catch(err => console.log(err));
+    .catch(err => res.status(400).json(err));
 });
 
 // @route   POST api/users/reset-password
@@ -194,6 +195,8 @@ router.post("/activation", (req, res) => {
 router.post("/reset-password", (req, res) => {
   console.log(req.body);
   const { errors, isValid } = validateEmailInput(req.body);
+
+  const notice = {};
 
   // Check validation
   if (!isValid) {
@@ -209,7 +212,6 @@ router.post("/reset-password", (req, res) => {
         errors.email = "This email is not registered.";
         return res.status(400).json(errors);
       }
-      res.json(user);
       // Send password reset email
       var transporter = nodemailer.createTransport({
         service: "gmail",
@@ -235,8 +237,12 @@ router.post("/reset-password", (req, res) => {
       };
       transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
-          errors.email = "Email could not be sent. Please try again later.";
-          return res.status(400).json(errors);
+          notice.fail = "Email was not be sent :( Please try again";
+          return res.status(200).json(notice);
+        } else if (info) {
+          notice.success =
+            "Success :) Please check your email for a password reset link.";
+          return res.status(200).json(notice);
         }
       });
     })
@@ -249,11 +255,14 @@ router.post("/reset-password", (req, res) => {
 router.post("/change-password", (req, res) => {
   // console.log(code);
   const { errors, isValid } = validatePassInput(req.body);
+  const initCodeCheck = req.body.initCodeCheck;
+  console.log(initCodeCheck);
 
-  if (!isValid) {
+  if (!isValid && !initCodeCheck) {
     return res.status(400).json(errors);
   }
 
+  const notice = {};
   const email = req.body.email;
   const code = req.body.code;
   const newPassword = req.body.password;
@@ -280,15 +289,24 @@ router.post("/change-password", (req, res) => {
               { email: { $eq: email } },
               { $set: { password: hash } }
             )
-            .then(user => res.json(user))
-            .catch(err => console.log(err));
+            .then(user => {
+              if (!initCodeCheck) {
+                notice.success = "Your password has been changed :)";
+                return res.status(200).json(notice);
+              } else {
+                return res.json({ user });
+              }
+            })
+            .catch(err => res.status(400).json(err));
         });
       } else {
-        errors.password2 = "Something went wrong. Please try again later.";
-        return res.status(400).json(errors);
+        notice.fail = "Something went wrong:( Please try again";
+        return res.status(200).json(notice);
       }
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      return res.status(400).json(err);
+    });
 });
 
 // @route   GET api/users/current

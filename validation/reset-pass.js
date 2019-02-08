@@ -12,7 +12,7 @@ module.exports = function validateEmailInput(data) {
   }
 
   if (data.email === "") {
-    errors.email = "Eml field is required";
+    errors.email = "Email field is required";
   }
 
   return {

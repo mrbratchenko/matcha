@@ -10,7 +10,7 @@ const fs = require("fs");
 const validateProfileInput = require("../../validation/profile");
 
 // @route   GET api/profile
-// @desc    Get current users profile
+// @desc    Get current user profile
 // @access  Private
 router.get(
   "/",

@@ -4,13 +4,16 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { resetPass } from "../../actions/authActions";
 import TextFieldGroup from "../common/TextFieldGroup";
+import Alert from "../common/Alert";
+import Spinner from "../common/Spinner";
 
 class ResetPass extends Component {
   constructor() {
     super();
     this.state = {
       email: "",
-      errors: {}
+      errors: {},
+      notice: {}
     };
 
     this.onChange = this.onChange.bind(this);
@@ -26,6 +29,16 @@ class ResetPass extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
+    }
+    if (
+      nextProps.notice.fail ||
+      nextProps.notice.success ||
+      nextProps.notice.warning
+    ) {
+      this.setState({
+        notice: nextProps.notice,
+        email: ""
+      });
     }
   }
 
@@ -44,7 +57,7 @@ class ResetPass extends Component {
   }
 
   render() {
-    const { errors } = this.state; // same: const errors = this.state.errors
+    const { notice, errors } = this.props;
 
     return (
       <div>
@@ -52,6 +65,10 @@ class ResetPass extends Component {
           <div className="container">
             <div className="row">
               <div className="col-md-8 m-auto">
+                {notice.loading && !Object.entries(errors).length && (
+                  <Spinner />
+                )}
+                <Alert notice={notice} />
                 <h1 className="display-4 text-center">Forgot password?</h1>
                 <p className="lead text-center">
                   Please give us your email for password reset
@@ -82,12 +99,14 @@ class ResetPass extends Component {
 
 ResetPass.propTypes = {
   resetPass: PropTypes.func.isRequired,
-  errors: PropTypes.object.isRequired
+  errors: PropTypes.object.isRequired,
+  notice: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth, //auth comes from reducers/index.js
-  errors: state.errors
+  errors: state.errors,
+  notice: state.notice
 });
 
 export default connect(

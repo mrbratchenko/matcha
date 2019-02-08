@@ -16,7 +16,6 @@ import Register from "./components/authorization/Register";
 import Login from "./components/authorization/Login";
 import ResetPass from "./components/authorization/ResetPass";
 import ChangePass from "./components/authorization/ChangePass";
-import Activate from "./components/authorization/Activate";
 import Dashboard from "./components/dashboard/Dashboard";
 import EditProfile from "./components/edit-profile/EditProfile";
 import Photos from "./components/photos/Photos";
@@ -60,7 +59,6 @@ class App extends Component {
               <Route exact path="/login" component={Login} />
               <Route exact path="/reset-password" component={ResetPass} />
               <Route exact path="/change-password" component={ChangePass} />
-              <Route exact path="/activation" component={Activate} />
               <Route exact path="/profiles" component={Profiles} />
               <Route exact path="/profile/:username" component={Profile} />
               <Switch>

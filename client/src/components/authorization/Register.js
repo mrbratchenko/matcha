@@ -69,17 +69,17 @@ class Register extends Component {
   }
 
   render() {
-    const { errors } = this.state;
-    const { notice } = this.props;
-    const { loading } = this.props.notice;
-    console.log(loading);
+    const { notice, errors } = this.props;
+
     return (
       <div>
         <div className="register">
           <div className="container">
             <div className="row">
               <div className="col-md-8 m-auto">
-                {loading && !Object.entries(errors).length && <Spinner />}
+                {notice.loading && !Object.entries(errors).length && (
+                  <Spinner />
+                )}
                 <Alert notice={notice} />
                 <h1 className="display-4 text-center">Sign Up</h1>
                 <p className="lead text-center">Create your Matches account</p>
