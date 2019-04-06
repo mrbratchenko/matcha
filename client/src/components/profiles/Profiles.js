@@ -33,6 +33,34 @@ class Profiles extends Component {
             <div className="col-md-12">
               <h1 className="display-4 text-center">Dating Profiles</h1>
               <p className="lead text-center">Browse and connect</p>
+              <div className="sorting container card card-body bg-light mb-3">
+                <h4 className="row pl-3">Sort by:</h4>
+                <div className="row list-group p-3 ">
+                  <div className="list-group-item">
+                    Age gap
+                    <input placeholder="from" name="" value="" />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="range"
+                      className="custom-range"
+                      min="0"
+                      max="5"
+                      step="0.5"
+                    />
+                    <input
+                      type="range"
+                      className="custom-range"
+                      min="0"
+                      max="5"
+                      step="0.5"
+                    />
+                  </div>
+                  <div className="list-group-item">Fame rating</div>
+                  <div className="list-group-item">Location</div>
+                  <div className="list-group-item">Interests</div>
+                </div>
+              </div>
               {profileItems}
             </div>
           </div>
