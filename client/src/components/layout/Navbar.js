@@ -25,15 +25,13 @@ class Navbar extends Component {
     const { isAuthenticated, user } = this.props.auth;
     const { profile } = this.props.profile;
 
-    let avatar;
+    let avatar = noAvatar;
 
-    if (user && user.avatar) {
-      avatar = require(`../../user-photos/${user.avatar}`);
-    } else if (profile && profile.avatar) {
-      avatar = require(`../../user-photos/${profile.avatar}`);
-    } else {
-      avatar = noAvatar;
-    }
+    // if (this.props.auth && user && user.avatar) {
+    //   avatar = require(`../../user-photos/${user.avatar}`);
+    // } else if (this.props.auth && profile && profile.avatar) {
+    //   avatar = require(`../../user-photos/${profile.avatar}`);
+    // }
 
     // console.log(profile);
     const authLinks = (
@@ -56,7 +54,7 @@ class Navbar extends Component {
           >
             <img
               className="rounded-circle"
-              src={avatar}
+              src={noAvatar}
               alt={user.name}
               style={{
                 width: "25px",
