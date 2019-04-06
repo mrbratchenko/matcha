@@ -14,10 +14,9 @@ class ProfileItem extends Component {
           <div className="col-2">
             <img
               src={
-                // profile.avatar
-                //   ? require(`../../user-photos/${profile.avatar}`)
-                //   :
-                noAvatar
+                profile.avatar
+                  ? require(`../../user-photos/${profile.avatar}`)
+                  : noAvatar
               }
               alt={noAvatar}
               className="rounded-circle mt-4"

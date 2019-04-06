@@ -2,6 +2,7 @@
 .vscode
 node_modules
 client/node_modules
+client/src/user-photos
 
 .env.local
 .env.development.local
