@@ -3,15 +3,16 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import isEmpty from "../../validation/is-empty";
 import noAvatar from "../../img/no-avatar.png";
+import { Row, Card, Col } from "reactstrap";
 
 class ProfileItem extends Component {
   render() {
     const { profile } = this.props;
     console.log(profile);
     return (
-      <div className="card card-body bg-light mb-3">
-        <div className="row">
-          <div className="col-2">
+      <Card className="card-body bg-light mb-3">
+        <Row>
+          <Col className="mb-3">
             <img
               src={
                 profile.avatar
@@ -22,8 +23,8 @@ class ProfileItem extends Component {
               className="rounded-circle mt-4"
               style={{ height: "12vmin" }}
             />
-          </div>
-          <div className="col-lg-6 col-md-4 col-8">
+          </Col>
+          <Col className="col-lg-6 col-md-4 col-8">
             <h3>{profile.name}</h3>
             <p>
               {profile.gender}
@@ -39,8 +40,8 @@ class ProfileItem extends Component {
             <Link to={`/profile/${profile.username}`} className="btn btn-info">
               View Profile
             </Link>
-          </div>
-          <div className="col-md-4 d-none d-md-block">
+          </Col>
+          <Col className="col-md-4 d-none d-md-block">
             <h4>Interests</h4>
             <ul className="list-group">
               {profile.interests &&
@@ -51,9 +52,9 @@ class ProfileItem extends Component {
                   </li>
                 ))}
             </ul>
-          </div>
-        </div>
-      </div>
+          </Col>
+        </Row>
+      </Card>
     );
   }
 }
