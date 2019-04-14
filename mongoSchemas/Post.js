@@ -167,3 +167,61 @@
 //     }
 //   }
 // });
+
+
+
+           bsonType: "string"
+//         },
+//         avatar: {
+//           bsonType: "string"
+//         },
+//         likes: {
+//           bsonType: "array"
+//         },
+//         comments: {
+//           bsonType: "array"
+//         },
+//         date: {
+//           bsonType: "date",
+//           default: Date.now
+//         }
+//       }
+//     }
+//   }
+// });           bsonType: "string"
+//         },
+//         avatar: {
+//           bsonType: "string"
+//         },
+//         likes: {
+//           bsonType: "array"
+//         },
+//         comments: {
+//           bsonType: "array"
+//         },
+//         date: {
+//           bsonType: "date",
+//           default: Date.now
+//         }
+//       }
+//     }
+//   }
+// });           bsonType: "string"
+//         },
+//         avatar: {
+//           bsonType: "string"
+//         },
+//         likes: {
+//           bsonType: "array"
+//         },
+//         comments: {
+//           bsonType: "array"
+//         },
+//         date: {
+//           bsonType: "date",
+//           default: Date.now
+//         }
+//       }
+//     }
+//   }
+// });
