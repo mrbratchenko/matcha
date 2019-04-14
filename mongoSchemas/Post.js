@@ -167,3 +167,44 @@
 //     }
 //   }
 // });
+
+//         likes: {
+//           bsonType: "array"
+//         },
+//         comments: {
+//           bsonType: "array"
+//         },
+//         date: {
+//           bsonType: "date",
+//           default: Date.now
+//         }
+//       }
+//     }
+//   }
+// });//         likes: {
+//           bsonType: "array"
+//         },
+//         comments: {
+//           bsonType: "array"
+//         },
+//         date: {
+//           bsonType: "date",
+//           default: Date.now
+//         }
+//       }
+//     }
+//   }
+// });//         likes: {
+//           bsonType: "array"
+//         },
+//         comments: {
+//           bsonType: "array"
+//         },
+//         date: {
+//           bsonType: "date",
+//           default: Date.now
+//         }
+//       }
+//     }
+//   }
+// });
