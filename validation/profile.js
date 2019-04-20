@@ -18,6 +18,18 @@ module.exports = function validateProfileInput(data) {
     errors.name = "Name field is required";
   }
 
+  if (parseInt(data.age) > 100) {
+    errors.age = "You are too old";
+  }
+
+  if (parseInt(data.age) < 18) {
+    errors.age = "You are too young, sorry :(";
+  }
+
+  if (data.age === "") {
+    errors.age = "Age field is required";
+  }
+
   if (data.email === "") {
     errors.email = "Email field is required";
   }

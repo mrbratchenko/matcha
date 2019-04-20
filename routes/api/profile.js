@@ -40,14 +40,28 @@ router.get(
 // @desc    Get all profiles
 // @access  Public
 router.get("/all", (req, res) => {
+  const filter = JSON.parse(req.query.filter);
   const errors = {};
   db.collection("users")
-    .find({}, { fields: { password: 0, isVerified: 0, verificationCode: 0 } })
+    .find(
+      {
+        location:
+          !filter || filter.location === "" ? { $not: /""/ } : filter.location,
+        $or: [
+          { age: { $gte: "47", $lte: "50" } },
+          { age: { $gte: "40", $lte: "43" } }
+        ]
+      },
+      { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
+    )
     .toArray((err, profiles) => {
-      if (profiles.length === 0 || err) {
+      if (err || profiles.length) {
         errors.profiles = "There are no profiles";
-        return res.status(404).json(errors);
+        console.log(profiles);
+        console.log(err);
+        return res.json(profiles);
       }
+
       res.json(profiles);
     });
 });
@@ -121,8 +135,10 @@ router.post(
     profileFields.username = req.body.username;
     profileFields.name = req.body.name;
     profileFields.email = req.body.email;
+    profileFields.age = req.body.age;
     if (req.body.company) profileFields.company = req.body.company;
-    if (req.body.location) profileFields.location = req.body.location;
+    profileFields.location = req.body.location;
+    profileFields.age = req.body.age;
     if (req.body.bio) profileFields.bio = req.body.bio;
     if (req.body.gender) profileFields.gender = req.body.gender;
     if (req.body.preference) profileFields.preference = req.body.preference;

@@ -8,7 +8,6 @@ import { Row, Card, Col } from "reactstrap";
 class ProfileItem extends Component {
   render() {
     const { profile } = this.props;
-    console.log(profile);
     return (
       <Card className="card-body bg-light mb-3">
         <Row>
@@ -28,13 +27,11 @@ class ProfileItem extends Component {
             <h3>{profile.name}</h3>
             <p>
               {profile.gender}
-              {isEmpty(profile.company) ? null : (
-                <span>at {profile.company}</span>
-              )}
+              {isEmpty(profile.age) ? null : <span>, age {profile.age}</span>}
             </p>
             <p>
               {isEmpty(profile.location) ? null : (
-                <span>at {profile.location}</span>
+                <span>In {profile.location}</span>
               )}
             </p>
             <Link to={`/profile/${profile.username}`} className="btn btn-info">

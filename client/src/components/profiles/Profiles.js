@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import Spinner from "../common/Spinner";
 import { getProfiles } from "../../actions/profileActions";
 import ProfileItem from "./ProfileItem";
-import { WithContext as ReactTags } from "react-tag-input";
 import {
   Container,
   Row,
@@ -12,69 +11,100 @@ import {
   Col,
   ListGroupItem,
   Input,
-  FormGroup,
   Badge,
-  Form
+  Button
 } from "reactstrap";
-
-const KeyCodes = {
-  comma: 188,
-  enter: 13
-};
-
-const delimiters = [KeyCodes.comma, KeyCodes.enter];
+import TagsInput from "react-tagsinput";
+import RangeInput from "../common/RangeInput";
 
 class Profiles extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      tags: [
-        { id: "Thailand", text: "Thailand" },
-        { id: "India", text: "India" }
-      ],
-      suggestions: [
-        { id: "USA", text: "USA" },
-        { id: "Germany", text: "Germany" },
-        { id: "Austria", text: "Austria" },
-        { id: "Costa Rica", text: "Costa Rica" },
-        { id: "Sri Lanka", text: "Sri Lanka" },
-        { id: "Thailand", text: "Thailand" }
-      ],
+      tags: [],
+      tag: "",
       ageFrom: "",
       ageTo: "",
       fameFrom: "",
       fameTo: "",
       location: ""
     };
-    this.handleDelete = this.handleDelete.bind(this);
-    this.handleAddition = this.handleAddition.bind(this);
-    this.handleDrag = this.handleDrag.bind(this);
-  }
-
-  handleDelete(i) {
-    const { tags } = this.state;
-    this.setState({
-      tags: tags.filter((tag, index) => index !== i)
-    });
-  }
-
-  handleAddition(tag) {
-    this.setState(state => ({ tags: [...state.tags, tag] }));
-  }
-
-  handleDrag(tag, currPos, newPos) {
-    const tags = [...this.state.tags];
-    const newTags = tags.slice();
-
-    newTags.splice(currPos, 1);
-    newTags.splice(newPos, 0, tag);
-
-    // re-render
-    this.setState({ tags: newTags });
   }
 
   onChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
+
+  handleTagChange = tags => {
+    this.setState({ tags });
+  };
+
+  checkValues = e => {
+    console.warn(e.target);
+    if (
+      e.target.name === "ageFrom" &&
+      e.target.value !== "" &&
+      this.state.ageTo !== "" &&
+      parseInt(e.target.value) > parseInt(this.state.ageTo)
+    ) {
+      const temp = e.target.value;
+      e.target.value = this.state.ageTo;
+      this.setState({ ageTo: temp });
+    }
+
+    if (
+      e.target.name === "ageTo" &&
+      e.target.value !== "" &&
+      this.state.ageTo !== "" &&
+      parseInt(e.target.value) < parseInt(this.state.ageFrom)
+    ) {
+      const temp = e.target.value;
+      e.target.value = this.state.ageFrom;
+      this.setState({ ageFrom: temp });
+    }
+
+    if (
+      e.target.name === "fameFrom" &&
+      e.target.value !== "" &&
+      this.state.fameTo !== "" &&
+      parseInt(e.target.value) > parseInt(this.state.fameTo)
+    ) {
+      const temp = e.target.value;
+      e.target.value = this.state.fameTo;
+      this.setState({ fameTo: temp });
+    }
+
+    if (
+      e.target.name === "fameTo" &&
+      e.target.value !== "" &&
+      this.state.fameTo !== "" &&
+      parseInt(e.target.value) < parseInt(this.state.fameFrom)
+    ) {
+      const temp = e.target.value;
+      e.target.value = this.state.fameFrom;
+      this.setState({ fameFrom: temp });
+    }
+
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  handleTagChangeInput = tag => {
+    this.setState({ tag });
+  };
+
+  onNumberChange = e => {
+    if (e.target.value < 0) {
+      e.target.value = 0;
+    }
+    if (e.target.value > 100) {
+      e.target.value = 100;
+    }
+    if (e.target.value === "00") {
+      e.target.value = 0;
+    }
     this.setState({
       [e.target.name]: e.target.value
     });
@@ -87,7 +117,6 @@ class Profiles extends Component {
   render() {
     const { profiles, loading } = this.props.profile;
     let profileItems;
-    const { tags, suggestions } = this.state;
 
     if (profiles === null || loading) {
       profileItems = <Spinner />;
@@ -109,125 +138,118 @@ class Profiles extends Component {
             <p className="lead text-center">Browse and connect</p>
             <Card className="sorting container card-body bg-light mb-3">
               <Row className="list-group p-3 ">
-                <h3 className="pl-3">
-                  <Badge color="info">Sort by:</Badge>
+                <h3 className="pl-4">
+                  <Badge color="info">Filter by:</Badge>
                 </h3>
 
                 <ListGroupItem>
                   <Row>
-                    <h3>
-                      <Badge className="m-2" color="secondary">
-                        Age gap
-                      </Badge>
-                    </h3>
-                    <Col>
-                      <Input
-                        className="m-2"
-                        placeholder="from"
-                        name="ageFrom"
+                    <Col xs="auto mr-5">
+                      <h3>
+                        <Badge className="m-2" color="secondary">
+                          Age gap
+                        </Badge>
+                      </h3>
+                    </Col>
+                    <Col xs="auto">
+                      <RangeInput
+                        placeholder={"from"}
+                        name={"ageFrom"}
                         value={this.state.ageFrom}
-                        onChange={this.onChange}
-                      />
-                      <Input
-                        className="ml-2"
-                        type="range"
-                        min="0"
-                        max="5"
-                        step="0.5"
+                        onNumberChange={this.onNumberChange}
+                        checkValues={this.checkValues}
                       />
                     </Col>
-                    <Col>
-                      <Input
-                        className="m-2"
-                        placeholder="to"
-                        name="ageTo"
+                    <Col xs="auto">
+                      <RangeInput
+                        placeholder={"to"}
+                        name={"ageTo"}
                         value={this.state.ageTo}
-                        onChange={this.onChange}
-                      />
-                      <Input
-                        className="ml-2"
-                        type="range"
-                        min="0"
-                        max="5"
-                        step="0.5"
+                        onNumberChange={this.onNumberChange}
+                        checkValues={this.checkValues}
                       />
                     </Col>
                   </Row>
-                  {/* </Form> */}
                 </ListGroupItem>
                 <ListGroupItem>
-                  {/* <Form> */}
                   <Row>
-                    <h3>
-                      <Badge className="m-2" color="secondary">
-                        Fame rating
-                      </Badge>
-                    </h3>
-                    <Col>
-                      <Input
-                        className="m-2"
-                        placeholder="from"
-                        name="ageFrom"
+                    <Col xs="auto mr-3">
+                      <h3>
+                        <Badge className="m-2" color="secondary">
+                          Fame rating
+                        </Badge>
+                      </h3>
+                    </Col>
+                    <Col xs="auto">
+                      <RangeInput
+                        placeholder={"from"}
+                        name={"fameFrom"}
                         value={this.state.fameFrom}
-                        onChange={this.onChange}
-                      />
-                      <Input
-                        className="ml-2"
-                        type="range"
-                        min="0"
-                        max="5"
-                        step="0.5"
+                        onNumberChange={this.onNumberChange}
+                        checkValues={this.checkValues}
                       />
                     </Col>
-                    <Col>
-                      <Input
-                        className="m-2"
-                        placeholder="to"
-                        name="ageTo"
+                    <Col xs="auto">
+                      <RangeInput
+                        placeholder={"to"}
+                        name={"fameTo"}
                         value={this.state.fameTo}
-                        onChange={this.onChange}
-                      />
-                      <Input
-                        className="ml-2"
-                        type="range"
-                        min="0"
-                        max="5"
-                        step="0.5"
+                        onNumberChange={this.onNumberChange}
+                        checkValues={this.checkValues}
                       />
                     </Col>
                   </Row>
                 </ListGroupItem>
 
                 <ListGroupItem>
-                  <h3>
-                    <Badge className="m-2" color="secondary">
-                      Location
-                    </Badge>
-                  </h3>
-                  <Input
-                    className="m-2"
-                    placeholder="Location"
-                    name="ageTo"
-                    value={this.state.location}
-                    onChange={this.onChange}
-                  />
+                  <Row>
+                    <Col xs="auto">
+                      <h3>
+                        <Badge className="m-2" color="secondary">
+                          Location
+                        </Badge>
+                      </h3>
+                    </Col>
+                    <Col>
+                      <Input
+                        className="m-2"
+                        placeholder="Location"
+                        name="location"
+                        value={this.state.location}
+                        onChange={this.onChange}
+                      />
+                    </Col>
+                  </Row>
                 </ListGroupItem>
                 <ListGroupItem>
-                  <h3>
-                    <Badge className="m-2" color="secondary">
-                      Interests
-                    </Badge>
-                  </h3>
-                  <ReactTags
-                    tags={tags}
-                    suggestions={suggestions}
-                    handleDelete={this.handleDelete}
-                    handleAddition={this.handleAddition}
-                    handleDrag={this.handleDrag}
-                    delimiters={delimiters}
-                  />
+                  <Row>
+                    <Col xs="auto">
+                      <h3>
+                        <Badge className="m-2" color="secondary">
+                          Interests
+                        </Badge>
+                      </h3>
+                    </Col>
+                    <Col className="mt-1">
+                      <TagsInput
+                        value={this.state.tags}
+                        onChange={this.handleTagChange}
+                        inputValue={this.state.tag}
+                        onChangeInput={this.handleTagChangeInput}
+                        inputProps={{
+                          placeholder: "Add interest"
+                        }}
+                      />
+                    </Col>
+                  </Row>
                 </ListGroupItem>
               </Row>
+              <Button
+                color="info"
+                onClick={() => this.props.getProfiles(this.state)}
+              >
+                Submit
+              </Button>
             </Card>
             {profileItems}
           </Col>
@@ -244,11 +266,9 @@ Profiles.propTypes = {
 
 const mapStateToProps = state => ({
   profile: state.profile
-  // state.profile is a reducer from index.js  - combineReducers
 });
 
 export default connect(
   mapStateToProps,
   { getProfiles }
 )(Profiles);
-// Connect connects react with redux
