@@ -42,26 +42,28 @@ router.get(
 router.get("/all", (req, res) => {
   const filter = JSON.parse(req.query.filter);
   const errors = {};
+  console.log(filter)
   db.collection("users")
     .find(
       {
         location:
           !filter || filter.location === "" ? { $not: /""/ } : filter.location,
         $or: [
-          { age: { $gte: "47", $lte: "50" } },
-          { age: { $gte: "40", $lte: "43" } }
-        ]
+          { age: { $gte: filter && filter.ageFrom ? filter.ageFrom : '1', $lte: filter && filter.ageTo ? filter.ageTo : '99'} }
+        ],
+        $or: [
+          { fame: { $gte: filter && filter.fameFrom ? filter.fameFrom : '1', $lte: filter && filter.fameTo ? filter.fameTo : '99'} }
+        ],
       },
       { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
     )
     .toArray((err, profiles) => {
       if (err || profiles.length) {
         errors.profiles = "There are no profiles";
-        console.log(profiles);
-        console.log(err);
+        // console.log(profiles);
+        // console.log(err);
         return res.json(profiles);
       }
-
       res.json(profiles);
     });
 });

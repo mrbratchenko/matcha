@@ -7,7 +7,9 @@ const RangeInput = ({
   name,
   value,
   onNumberChange,
-  checkValues
+  checkValues,
+  min,
+  max
 }) => (
   <Container>
     <Input
@@ -23,8 +25,8 @@ const RangeInput = ({
       className="ml-2"
       type="range"
       name={name}
-      max="100"
-      min="0"
+      max={max}
+      min={min}
       step="1"
       value={value}
       onChange={onNumberChange}
