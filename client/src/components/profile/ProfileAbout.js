@@ -11,11 +11,11 @@ class ProfileAbout extends Component {
     const firstName = profile.name.trim().split(" ")[0];
 
     // Skill list
-    const interests = profile.interests.map((skill, index) => (
-      <div key={index} className="p-3">
-        <i className="fa fa-check" /> {skill}
-      </div>
-    ));
+    // const interests = profile.interests.map((skill, index) => (
+    //   <div key={index} className="p-3">
+    //     <i className="fa fa-check" /> {skill}
+    //   </div>
+    // ));
     return (
       <div className="row">
         <div className="col-md-12">
@@ -32,7 +32,7 @@ class ProfileAbout extends Component {
             <h3 className="text-center text-info">Interests</h3>
             <div className="row">
               <div className="d-flex flex-wrap justify-content-center align-items-center" />
-              {interests}
+              {/* {interests} */}
             </div>
           </div>
         </div>

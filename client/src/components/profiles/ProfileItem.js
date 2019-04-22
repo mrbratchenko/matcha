@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import isEmpty from "../../validation/is-empty";
-import noAvatar from "../../img/no-avatar.png";
+//import noAvatar from "../../img/no-avatar.png";
 
 class ProfileItem extends Component {
   render() {
@@ -12,7 +12,7 @@ class ProfileItem extends Component {
       <div className="card card-body bg-light mb-3">
         <div className="row">
           <div className="col-2">
-            <img
+            {/* <img
               src={
                 profile.avatar
                   ? require(`../../user-photos/${profile.avatar}`)
@@ -21,7 +21,7 @@ class ProfileItem extends Component {
               alt={noAvatar}
               className="rounded-circle mt-4"
               style={{ height: "12vmin" }}
-            />
+            /> */}
           </div>
           <div className="col-lg-6 col-md-4 col-8">
             <h3>{profile.name}</h3>
