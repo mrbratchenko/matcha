@@ -17,6 +17,7 @@ class EditProfile extends Component {
       displaySocialInputs: false,
       name: "",
       username: "",
+      age: "",
       email: "",
       location: "",
       gender: "",
@@ -33,7 +34,6 @@ class EditProfile extends Component {
   }
 
   componentDidMount() {
-    console.log("componentDidMount - done!");
     this.props.getCurrentProfile();
   }
 
@@ -55,6 +55,7 @@ class EditProfile extends Component {
       // If profile doesn't exist, make empty string
       profile.location = !isEmpty(profile.location) ? profile.location : "";
       profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
+      profile.age = !isEmpty(profile.age) ? profile.age : "";
       profile.gender = !isEmpty(profile.gender) ? profile.gender : "";
       profile.preference = !isEmpty(profile.preference)
         ? profile.preference
@@ -62,6 +63,10 @@ class EditProfile extends Component {
 
       if (!isEmpty(this.state.name)) {
         profile.name = this.state.name;
+      }
+
+      if (!isEmpty(this.state.age)) {
+        profile.age = this.state.age;
       }
 
       if (!isEmpty(this.state.username)) {
@@ -86,6 +91,7 @@ class EditProfile extends Component {
         name: profile.name,
         email: profile.email,
         username: profile.username,
+        age: profile.age,
         location: profile.location,
         gender: profile.gender,
         preference: profile.preference,
@@ -104,6 +110,7 @@ class EditProfile extends Component {
       name: this.state.name,
       email: this.state.email,
       username: this.state.username,
+      age: this.state.age,
       location: this.state.location,
       gender: this.state.gender,
       preference: this.state.preference,
@@ -202,6 +209,16 @@ class EditProfile extends Component {
                   onChange={this.onChange}
                   error={errors.username}
                   info="Your unique username"
+                />
+
+                <TextFieldGroup
+                  placeholder="* Age"
+                  name="age"
+                  value={this.state.age}
+                  onChange={this.onChange}
+                  error={errors.age}
+                  info="Your age"
+                  type="number"
                 />
 
                 <SelectListGroup

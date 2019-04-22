@@ -149,10 +149,15 @@ export const clearCurrentProfile = () => {
 };
 
 // Get all profiles
-export const getProfiles = () => dispatch => {
+export const getProfiles = filterData => dispatch => {
   dispatch(setProfileLoading());
+  console.warn(filterData);
+
+  let filter =
+    typeof filterData !== "undefined" ? JSON.stringify(filterData) : null;
+
   axios
-    .get("/api/profile/all")
+    .get(`/api/profile/all/?filter=${filter}`)
     .then(res =>
       dispatch({
         type: GET_PROFILES,
