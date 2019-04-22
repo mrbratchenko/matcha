@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken"); // generate user token
 const keys = require("../../config/keys");
 const passport = require("passport"); // verify user's token
 var nodemailer = require("nodemailer");
+var geoip = require('geoip-lite');
 
 // Validation
 const validateRegisterInput = require("../../validation/register");
@@ -148,6 +149,13 @@ router.post("/login", (req, res) => {
               token: "Bearer " + token
             });
           });
+          var ip = "178.214.196.34";
+          var geo = geoip.lookup(ip);
+          db.collection("users")
+            .findOneAndUpdate(
+              {_id: user._id},
+              {$set: {country: geo.country, coordinate: geo.ll, location: geo.city}}
+              )
         } else {
           errors.password = "Password incorrect";
           return res.status(400).json(errors);
