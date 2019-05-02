@@ -47,14 +47,10 @@ router.get("/all", (req, res) => {
   db.collection("users")
     .find(
       {
-        location:
-          !filter || filter.location === "" ? { $not: /""/ } : filter.location,
-        $or: [
-          { age: { $gte: filter && filter.ageFrom ? filter.ageFrom : '1', $lte: filter && filter.ageTo ? filter.ageTo : '99'} }
-        ],
-        $or: [
-          { fame: { $gte: filter && filter.fameFrom ? filter.fameFrom : '1', $lte: filter && filter.fameTo ? filter.fameTo : '99'} }
-        ],
+        location: !filter || filter.location === "" ? { $not: /""/ } : filter.location, 
+        age: { $gte: filter && filter.ageFrom ? filter.ageFrom : 18, $lte: filter && filter.ageTo ? filter.ageTo : 100},
+        fame: { $gte: filter && filter.fameFrom ? filter.fameFrom : 1, $lte: filter && filter.fameTo ? filter.fameTo : 100},
+
       },
       { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
     )
@@ -151,7 +147,7 @@ router.post(
       req.body.interests.indexOf(",") > -1 &&
       req.body.interests.indexOf("#") > -1
     ) {
-      profileFields.interests = req.body.interests.split(",");
+      profileFields.interests = req.body.interests.split(",").trim();
       profileFields.interests.map(str => {
         if (str.trim().indexOf("#") !== 0)
           errors.interests = "Please use tags with every interest";

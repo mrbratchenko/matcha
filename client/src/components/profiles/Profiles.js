@@ -95,23 +95,30 @@ class Profiles extends Component {
   }
 
   handleSubmit = () => {
-    const {age} = this.props.profile.profile
+    const { age } = this.props.profile.profile
 
-    let gap = this.state.ageGap === '' ? '0' : this.state.ageGap
+    const data = {
+      tags: this.state.tags,
+      tag: this.state.tag,
+      location: this.state.location,
+      ageGap: parseInt(this.state.ageGap),
+      ageFrom: null,
+      ageTo: null,
+      fameFrom: parseInt(this.state.fameFrom),
+      fameTo: parseInt(this.state.fameTo)
+    }
 
-    let ageFrom = parseInt(age) - parseInt(gap);
-    ageFrom = ageFrom < 1 ? "1" : ageFrom.toString()
+    if (isNaN(data.ageGap)){
+      data.ageGap = null
+    } else {
+      data.ageFrom = age - data.ageGap
+      data.ageFrom = data.ageFrom < 18 ? 18 : data.ageFrom
+      data.ageTo = age + data.ageGap
+      data.ageTo = data.ageTo > 100 ? 100 : data.ageTo
+    }
 
-    let ageTo = parseInt(age) + parseInt(gap);
-    ageTo = ageTo > 99 ? "99" : ageTo.toString()
 
-    ageFrom = gap === '0' ? '' : ageFrom
-    ageTo = gap === '0' ? '' : ageTo
-
-    this.setState({
-      ageFrom,
-      ageTo
-    }, () => this.props.getProfiles(this.state))
+    this.props.getProfiles(data)
   }
 
   render() {
