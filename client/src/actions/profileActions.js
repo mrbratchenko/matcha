@@ -148,6 +148,16 @@ export const clearCurrentProfile = () => {
   };
 };
 
+export const addFake = filterData => dispatch => {
+  axios
+    .post('/api/profile/fake', filterData)
+    .then(res =>
+      dispatch({
+        type: GET_PROFILES,
+        payload: res.data
+      }));
+}
+
 // Get all profiles
 export const getProfiles = filterData => dispatch => {
   dispatch(setProfileLoading());

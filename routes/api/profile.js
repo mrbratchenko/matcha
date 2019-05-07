@@ -45,15 +45,7 @@ router.get("/all", (req, res) => {
   const errors = {};
   db.collection("users")
     .find(
-      {
-        location:
-          !filter || filter.location === "" ? { $not: /""/ } : filter.location,
-        $or: [
-          { age: { $gte: "47", $lte: "50" } },
-          { age: { $gte: "40", $lte: "43" } }
-        ]
-      },
-      { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
+
     )
     .toArray((err, profiles) => {
       if (err || profiles.length) {
@@ -324,6 +316,13 @@ router.delete(
   (req, res) => {
     // Get remove index
     db.collection("users").removeOne({ _id: ObjectId(req.user._id) });
+  }
+);
+
+router.post("/fake",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    db.collection("users").findOneAndUpdate({'_id': ObjectId(req.body.name)}, {$inc: {fake: 1}});
   }
 );
 

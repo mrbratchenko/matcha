@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import isEmpty from "../../validation/is-empty";
+import { connect } from "react-redux";
 
 import noAvatar from "../../img/no-avatar.png";
-import { Row, Card, Col } from "reactstrap";
+import { Row, Card, Col, Button } from "reactstrap";
+import { addFake } from "../../actions/profileActions";
 
 class ProfileItem extends Component {
   render() {
@@ -35,9 +37,15 @@ class ProfileItem extends Component {
                 <span>In {profile.location}</span>
               )}
             </p>
-            <Link to={`/profile/${profile.username}`} className="btn btn-info">
+            <Link to={`/profile/${profile.username}`} className="btn btn-info mr-2">
               View Profile
             </Link>
+            <Button
+                color="danger"
+                onClick={() => this.props.addFake({name: profile._id})}
+              >
+                Fake Profile
+              </Button>
           </Col>
           <Col className="col-md-4 d-none d-md-block">
             <h4>Interests</h4>
@@ -58,7 +66,14 @@ class ProfileItem extends Component {
 }
 
 ProfileItem.propTypes = {
-  profile: PropTypes.object.isRequired
+  profile: PropTypes.object.isRequired,
+  addFake: PropTypes.func.isRequired
 };
 
-export default ProfileItem;
+const mapStateToProps = state => ({
+});
+
+export default connect(
+  mapStateToProps,
+  { addFake }
+)(withRouter(ProfileItem));

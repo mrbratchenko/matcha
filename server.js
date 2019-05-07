@@ -42,11 +42,6 @@ MongoClient.connect(url, { useNewUrlParser: true })
     console.log("DB connected");
     db = client.db("matcha");
   })
-  .then(() => {
-    require("./mongoSchemas/User");
-    require("./mongoSchemas/Profile");
-    require("./mongoSchemas/Post");
-  })
   .catch(err => console.log(err));
 
 // Passport
