@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import Spinner from "../common/Spinner";
-import { getProfiles } from "../../actions/profileActions";
+import { getProfiles, getCurrentProfile } from "../../actions/profileActions";
 import ProfileItem from "./ProfileItem";
 import {
   Container,
@@ -24,6 +24,7 @@ class Profiles extends Component {
     this.state = {
       tags: [],
       tag: "",
+      ageGap: "",
       ageFrom: "",
       ageTo: "",
       fameFrom: "",
@@ -42,29 +43,11 @@ class Profiles extends Component {
     this.setState({ tags });
   };
 
-  checkValues = e => {
-    console.warn(e.target);
-    if (
-      e.target.name === "ageFrom" &&
-      e.target.value !== "" &&
-      this.state.ageTo !== "" &&
-      parseInt(e.target.value) > parseInt(this.state.ageTo)
-    ) {
-      const temp = e.target.value;
-      e.target.value = this.state.ageTo;
-      this.setState({ ageTo: temp });
-    }
+  handleTagChangeInput = tag => {
+    this.setState({ tag });
+  };
 
-    if (
-      e.target.name === "ageTo" &&
-      e.target.value !== "" &&
-      this.state.ageTo !== "" &&
-      parseInt(e.target.value) < parseInt(this.state.ageFrom)
-    ) {
-      const temp = e.target.value;
-      e.target.value = this.state.ageFrom;
-      this.setState({ ageFrom: temp });
-    }
+  checkValues = e => {
 
     if (
       e.target.name === "fameFrom" &&
@@ -91,16 +74,12 @@ class Profiles extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  handleTagChangeInput = tag => {
-    this.setState({ tag });
-  };
-
-  onNumberChange = e => {
+  onNumberChange = (e, limit) => {
     if (e.target.value < 0) {
       e.target.value = 0;
     }
-    if (e.target.value > 100) {
-      e.target.value = 100;
+    if (e.target.value > limit) {
+      e.target.value = limit;
     }
     if (e.target.value === "00") {
       e.target.value = 0;
@@ -111,7 +90,35 @@ class Profiles extends Component {
   };
 
   componentDidMount() {
+    this.props.getCurrentProfile();
     this.props.getProfiles();
+  }
+
+  handleSubmit = () => {
+    const { age } = this.props.profile.profile
+
+    const data = {
+      tags: this.state.tags,
+      tag: this.state.tag,
+      location: this.state.location,
+      ageGap: parseInt(this.state.ageGap),
+      ageFrom: null,
+      ageTo: null,
+      fameFrom: parseInt(this.state.fameFrom),
+      fameTo: parseInt(this.state.fameTo)
+    }
+
+    if (isNaN(data.ageGap)){
+      data.ageGap = null
+    } else {
+      data.ageFrom = age - data.ageGap
+      data.ageFrom = data.ageFrom < 18 ? 18 : data.ageFrom
+      data.ageTo = age + data.ageGap
+      data.ageTo = data.ageTo > 100 ? 100 : data.ageTo
+    }
+
+
+    this.props.getProfiles(data)
   }
 
   render() {
@@ -129,6 +136,8 @@ class Profiles extends Component {
         profileItems = <h4>No profiles found</h4>;
       }
     }
+
+    
 
     return (
       <Container>
@@ -153,20 +162,14 @@ class Profiles extends Component {
                     </Col>
                     <Col xs="auto">
                       <RangeInput
-                        placeholder={"from"}
-                        name={"ageFrom"}
-                        value={this.state.ageFrom}
-                        onNumberChange={this.onNumberChange}
+                        placeholder={"age gap"}
+                        name={"ageGap"}
+                        value={this.state.ageGap}
+                        onNumberChange={(e) => this.onNumberChange(e, 50)}
                         checkValues={this.checkValues}
-                      />
-                    </Col>
-                    <Col xs="auto">
-                      <RangeInput
-                        placeholder={"to"}
-                        name={"ageTo"}
-                        value={this.state.ageTo}
-                        onNumberChange={this.onNumberChange}
-                        checkValues={this.checkValues}
+                        min={'0'}
+                        max={'50'}
+
                       />
                     </Col>
                   </Row>
@@ -185,8 +188,10 @@ class Profiles extends Component {
                         placeholder={"from"}
                         name={"fameFrom"}
                         value={this.state.fameFrom}
-                        onNumberChange={this.onNumberChange}
+                        onNumberChange={(e) => this.onNumberChange(e, 100)}
                         checkValues={this.checkValues}
+                        min={'0'}
+                        max={'100'}
                       />
                     </Col>
                     <Col xs="auto">
@@ -194,8 +199,10 @@ class Profiles extends Component {
                         placeholder={"to"}
                         name={"fameTo"}
                         value={this.state.fameTo}
-                        onNumberChange={this.onNumberChange}
+                        onNumberChange={(e) => this.onNumberChange(e, 100)}
                         checkValues={this.checkValues}
+                        min={'0'}
+                        max={'100'}
                       />
                     </Col>
                   </Row>
@@ -246,7 +253,7 @@ class Profiles extends Component {
               </Row>
               <Button
                 color="info"
-                onClick={() => this.props.getProfiles(this.state)}
+                onClick={() => this.handleSubmit()}
               >
                 Submit
               </Button>
@@ -261,6 +268,7 @@ class Profiles extends Component {
 
 Profiles.propTypes = {
   getProfiles: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired
 };
 
@@ -270,5 +278,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getProfiles }
+  { getProfiles, getCurrentProfile }
 )(Profiles);
