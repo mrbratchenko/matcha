@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { changePass } from "../../actions/authActions";
-import queryString from "query-string"; // for parsing req.query for backend
+import queryString from "query-string";
 import TextFieldGroup from "../common/TextFieldGroup";
 
 class ChangePass extends Component {
@@ -27,7 +27,6 @@ class ChangePass extends Component {
       initCodeCheck: true
     };
 
-    console.log(userData);
     this.props.changePass(userData);
   }
 

@@ -1,5 +1,4 @@
 import React from "react";
-// import noPicture from "../../img/ring-loader.gif";
 
 const Photo = ({
   source,
@@ -14,7 +13,6 @@ const Photo = ({
     im = require(`../../user-photos/${source[index]}`);
   } catch (e) {
     if (e instanceof Error && e.code === "MODULE_NOT_FOUND") {
-      // im = noPicture;
       return null;
     }
   }

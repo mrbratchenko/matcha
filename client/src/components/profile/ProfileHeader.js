@@ -5,7 +5,6 @@ import noAvatar from "../../img/no-avatar.png";
 class ProfileHeader extends Component {
   render() {
     const profile = this.props.profile;
-    console.log(profile);
     return (
       <div className="row">
         <div className="col-md-12">
@@ -35,11 +34,7 @@ class ProfileHeader extends Component {
               </p>
               <p>
                 {isEmpty(profile.social && profile.social.twitter) ? null : (
-                  <a
-                    className="text-white p-2"
-                    href={profile.social.twitter}
-                    // target="_blank"
-                  >
+                  <a className="text-white p-2" href={profile.social.twitter}>
                     <i className="fab fa-twitter fa-2x" />
                   </a>
                 )}

@@ -3,7 +3,6 @@ const isEmail = require("./is-email");
 const isComplex = require("./is-complex");
 
 module.exports = function validateRegisterInput(data) {
-  // test are run on the client side
   let errors = {};
 
   data.name = !isEmpty(data.name) ? data.name : "";
@@ -11,7 +10,6 @@ module.exports = function validateRegisterInput(data) {
   data.password = !isEmpty(data.password) ? data.password : "";
   data.password2 = !isEmpty(data.password2) ? data.password2 : "";
 
-  // Name
   if (data.name.length < 2 || data.name.length > 30) {
     errors.name = "Name must be between 2 and 30 characters";
   }
@@ -20,7 +18,6 @@ module.exports = function validateRegisterInput(data) {
     errors.name = "Name field is required";
   }
 
-  // Userame
   if (data.username.length < 4 || data.username.length > 20) {
     errors.username = "Username must be between 4 and 20 characters";
   }
@@ -29,7 +26,6 @@ module.exports = function validateRegisterInput(data) {
     errors.username = "Username field is required";
   }
 
-  // Email
   if (data.email === "") {
     errors.email = "Email field is required";
   }
@@ -38,7 +34,6 @@ module.exports = function validateRegisterInput(data) {
     errors.email = "Email is not valid";
   }
 
-  // Password
   if (data.password === "") {
     errors.password = "Password field is required";
   }
@@ -55,7 +50,6 @@ module.exports = function validateRegisterInput(data) {
     errors.password = "Password must be at least 6 characters";
   }
 
-  // Password2
   if (data.password2 === "") {
     errors.password2 = "Confirm password field is required";
   }
@@ -65,7 +59,7 @@ module.exports = function validateRegisterInput(data) {
   }
 
   return {
-    errors, // errors: errors
-    isValid: isEmpty(errors) // true or false basing on what isEmpty returns
+    errors,
+    isValid: isEmpty(errors)
   };
 };

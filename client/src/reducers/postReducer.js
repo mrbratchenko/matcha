@@ -11,7 +11,6 @@ const initialState = {
   post: {},
   loading: false
 };
-/// this shows in REDUX STATE
 
 export default function(state = initialState, action) {
   switch (action.type) {

@@ -32,7 +32,7 @@ module.exports = function validatePassInput(data) {
   }
 
   return {
-    errors, // errors: errors
-    isValid: isEmpty(errors) // true or false basing on what isEmpty returns
+    errors,
+    isValid: isEmpty(errors)
   };
 };

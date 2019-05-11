@@ -42,11 +42,11 @@ router.post(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     const { errors, isValid } = validatePostInput(req.body);
-    // Check validation
+
     if (!isValid) {
-      // If any errors send 400 with errors object
       return res.status(400).json(errors);
     }
+
     const newPost = {
       _id: new ObjectId(),
       text: req.body.text,
@@ -124,7 +124,6 @@ router.post(
                 .status(400)
                 .json({ alreadyliked: "User already liked this post" });
             }
-
             // Add user id to likes array
             db.collection("posts")
               .updateOne(
@@ -234,7 +233,6 @@ router.delete(
             .status(404)
             .json({ commentnotexists: "Comment does not exist" });
         }
-        console.log(req.params.com_id);
         db.collection("posts")
           .findOneAndUpdate(
             { "comments._id": ObjectId(req.params.com_id) },

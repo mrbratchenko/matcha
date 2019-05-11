@@ -5,6 +5,9 @@ import { getCurrentProfile, deleteAccount } from "../../actions/profileActions";
 import Spinner from "../common/Spinner";
 import { Link } from "react-router-dom";
 import ProfileActions from "./ProfileActions";
+import ProfileHeader from "../profile/ProfileHeader";
+import ProfileAbout from "../profile/ProfileAbout";
+import noAvatar from "../../img/no-avatar.png";
 
 class Dashboard extends Component {
   componentDidMount() {
@@ -18,14 +21,11 @@ class Dashboard extends Component {
   render() {
     const { user } = this.props.auth;
     const { profile, loading } = this.props.profile;
-    console.log(profile);
     let dashboardContent;
 
-    if (profile === null || loading) {
+    if (!profile || loading) {
       dashboardContent = <Spinner />;
     } else {
-      // Check if logged in user has a profile
-
       if (profile.gender) {
         dashboardContent = (
           <div>
@@ -34,7 +34,63 @@ class Dashboard extends Component {
               <Link to={`/profile/${profile.username}`}>{profile.name}</Link>
             </p>
             <ProfileActions />
-            <div style={{ marginBottom: "60px" }} />
+            <ProfileHeader profile={profile} />
+            <ProfileAbout
+              profile={profile}
+              extraContent={
+                <div>
+                  <hr />
+                  <h3 className="text-center text-info">You were liked by</h3>
+                  <div className="row">
+                    <div className="d-flex flex-wrap justify-content-center align-items-center ml-3" />
+                    <div className="container">
+                      <div className="row">
+                        {profile && profile.likes && profile.likes.length ? (
+                          profile.likes.map((like, i) => {
+                            return (
+                              <div className="ml-3 mr-3">
+                                <div>
+                                  <Link to={`/profile/${like.username}`}>
+                                    <img
+                                      className="rounded-circle img-thumbnail "
+                                      style={{
+                                        width: "70px",
+                                        height: "70px"
+                                      }}
+                                      src={
+                                        like && like.avatar
+                                          ? require(`../../user-photos/${
+                                              like.avatar
+                                            }`)
+                                          : noAvatar
+                                      }
+                                      alt=""
+                                    />
+                                  </Link>
+                                </div>
+                                <div>
+                                  <span>
+                                    {like && like.username
+                                      ? like.username
+                                      : null}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p className="lead ml-2">
+                            <span>Noone liked you yet.</span>
+                          </p>
+                        )}
+                      </div>
+                      <br />
+                    </div>
+                  </div>
+                </div>
+              }
+            />
+
             <button
               onClick={this.onDeleteClick.bind(this)}
               className="btn btn-danger"
@@ -44,7 +100,6 @@ class Dashboard extends Component {
           </div>
         );
       } else {
-        // User is logged in but no profile
         dashboardContent = (
           <div>
             <p className="lead text-muted">Welcome {user.name}</p>

@@ -14,6 +14,32 @@ import {
 // Get username
 export const getUsername = "passed username";
 
+// Add like
+export const addProfileLike = id => dispatch => {
+  axios
+    .post(`/api/profile/like/${id}`)
+    .then(res => dispatch(getProfiles()))
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+// Remove like
+export const removeProfileLike = id => dispatch => {
+  axios
+    .post(`/api/profile/unlike/${id}`)
+    .then(res => dispatch(getProfiles()))
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
 // Get current profile
 export const getCurrentProfile = () => dispatch => {
   dispatch(setProfileLoading());
@@ -36,7 +62,6 @@ export const getCurrentProfile = () => dispatch => {
 
 // Get profile by username
 export const getProfileByUsername = username => dispatch => {
-  // console.log(username);
   dispatch(setProfileLoading());
   axios
     .get(`/api/profile/username/${username}`)
@@ -150,18 +175,19 @@ export const clearCurrentProfile = () => {
 
 export const addFake = filterData => dispatch => {
   axios
-    .post('/api/profile/fake', filterData)
-    .then(res =>
+    .post("/api/profile/fake", filterData)
+    .then(res => dispatch(getProfiles()))
+    .catch(err =>
       dispatch({
-        type: GET_PROFILES,
-        payload: res.data
-      }));
-}
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
 
 // Get all profiles
 export const getProfiles = filterData => dispatch => {
   dispatch(setProfileLoading());
-  console.warn(filterData);
 
   let filter =
     typeof filterData !== "undefined" ? JSON.stringify(filterData) : null;

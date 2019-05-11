@@ -48,7 +48,6 @@ class Profiles extends Component {
   };
 
   checkValues = e => {
-
     if (
       e.target.name === "fameFrom" &&
       e.target.value !== "" &&
@@ -95,7 +94,7 @@ class Profiles extends Component {
   }
 
   handleSubmit = () => {
-    const { age } = this.props.profile.profile
+    const { age } = this.props.profile.profile;
 
     const data = {
       tags: this.state.tags,
@@ -106,20 +105,19 @@ class Profiles extends Component {
       ageTo: null,
       fameFrom: parseInt(this.state.fameFrom),
       fameTo: parseInt(this.state.fameTo)
-    }
+    };
 
-    if (isNaN(data.ageGap)){
-      data.ageGap = null
+    if (isNaN(data.ageGap)) {
+      data.ageGap = null;
     } else {
-      data.ageFrom = age - data.ageGap
-      data.ageFrom = data.ageFrom < 18 ? 18 : data.ageFrom
-      data.ageTo = age + data.ageGap
-      data.ageTo = data.ageTo > 100 ? 100 : data.ageTo
+      data.ageFrom = age - data.ageGap;
+      data.ageFrom = data.ageFrom < 18 ? 18 : data.ageFrom;
+      data.ageTo = age + data.ageGap;
+      data.ageTo = data.ageTo > 100 ? 100 : data.ageTo;
     }
 
-
-    this.props.getProfiles(data)
-  }
+    this.props.getProfiles(data);
+  };
 
   render() {
     const { profiles, loading } = this.props.profile;
@@ -136,8 +134,6 @@ class Profiles extends Component {
         profileItems = <h4>No profiles found</h4>;
       }
     }
-
-    
 
     return (
       <Container>
@@ -165,11 +161,10 @@ class Profiles extends Component {
                         placeholder={"age gap"}
                         name={"ageGap"}
                         value={this.state.ageGap}
-                        onNumberChange={(e) => this.onNumberChange(e, 50)}
+                        onNumberChange={e => this.onNumberChange(e, 50)}
                         checkValues={this.checkValues}
-                        min={'0'}
-                        max={'50'}
-
+                        min={"0"}
+                        max={"50"}
                       />
                     </Col>
                   </Row>
@@ -188,10 +183,10 @@ class Profiles extends Component {
                         placeholder={"from"}
                         name={"fameFrom"}
                         value={this.state.fameFrom}
-                        onNumberChange={(e) => this.onNumberChange(e, 100)}
+                        onNumberChange={e => this.onNumberChange(e, 100)}
                         checkValues={this.checkValues}
-                        min={'0'}
-                        max={'100'}
+                        min={"0"}
+                        max={"100"}
                       />
                     </Col>
                     <Col xs="auto">
@@ -199,10 +194,10 @@ class Profiles extends Component {
                         placeholder={"to"}
                         name={"fameTo"}
                         value={this.state.fameTo}
-                        onNumberChange={(e) => this.onNumberChange(e, 100)}
+                        onNumberChange={e => this.onNumberChange(e, 100)}
                         checkValues={this.checkValues}
-                        min={'0'}
-                        max={'100'}
+                        min={"0"}
+                        max={"100"}
                       />
                     </Col>
                   </Row>
@@ -251,10 +246,7 @@ class Profiles extends Component {
                   </Row>
                 </ListGroupItem>
               </Row>
-              <Button
-                color="info"
-                onClick={() => this.handleSubmit()}
-              >
+              <Button color="info" onClick={() => this.handleSubmit()}>
                 Submit
               </Button>
             </Card>

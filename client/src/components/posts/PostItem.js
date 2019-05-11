@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import classnames from "classnames";
 import { Link } from "react-router-dom";
 import { deletePost, addLike, removeLike } from "../../actions/postActions";
+import noAvatar from "../../img/no-avatar.png";
 
 class PostItem extends Component {
   onDeleteClick(id) {
@@ -12,7 +13,6 @@ class PostItem extends Component {
 
   onLikeClick(id) {
     this.props.addLike(id);
-    // calls from postActions
   }
 
   onUnlikeClick(id) {
@@ -29,7 +29,7 @@ class PostItem extends Component {
   }
 
   render() {
-    const { post, auth, showActions } = this.props;
+    const { post, auth, showActions, profile } = this.props;
 
     return (
       <div className="card card-body mb-3">
@@ -38,10 +38,15 @@ class PostItem extends Component {
             <a href="profile.html">
               <img
                 className="rounded-circle d-none d-md-block"
-                src={post.avatar}
+                src={
+                  profile.profile && profile.profile.avatar
+                    ? require(`../../user-photos/${profile.profile.avatar}`)
+                    : noAvatar
+                }
                 alt=""
               />
             </a>
+
             <br />
             <p className="text-center">{post.name}</p>
           </div>
@@ -100,11 +105,13 @@ PostItem.propTypes = {
   removeLike: PropTypes.func.isRequired,
   deletePost: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  profile: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  profile: state.profile
 });
 
 export default connect(

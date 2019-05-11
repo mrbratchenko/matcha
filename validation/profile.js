@@ -7,6 +7,7 @@ module.exports = function validateProfileInput(data) {
   data.username = !isEmpty(data.username) ? data.username : "";
   data.name = !isEmpty(data.name) ? data.name : "";
   data.email = !isEmpty(data.email) ? data.email : "";
+  data.age = !isEmpty(data.age) ? data.age : "";
   data.gender = !isEmpty(data.gender) ? data.gender : "";
   data.interests = !isEmpty(data.interests) ? data.interests : "";
 
@@ -48,6 +49,10 @@ module.exports = function validateProfileInput(data) {
 
   if (data.gender === "") {
     errors.gender = "Gender field is required";
+  }
+
+  if (data.age === "") {
+    errors.gender = "Age field is required";
   }
 
   if (data.interests === "") {

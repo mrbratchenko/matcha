@@ -27,12 +27,10 @@ class Photos extends Component {
   }
 
   componentDidMount() {
-    console.log("componentDidMount - done!");
     this.props.getCurrentProfile();
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("componentWillReceiveProps - done!");
 
     if (Object.keys(nextProps.errors).length) {
       this.setState({
@@ -100,7 +98,6 @@ class Photos extends Component {
       modalSrc,
       modal: "none"
     });
-    console.log("onModalClick");
   }
 
   render() {

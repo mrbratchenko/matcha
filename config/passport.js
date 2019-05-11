@@ -10,11 +10,9 @@ opts.secretOrKey = keys.jwtKey;
 module.exports = passport => {
   passport.use(
     new JwtStrategy(opts, (payload, done) => {
-      // console.log(payload);
       db.collection("users")
         .findOne({ _id: ObjectId(payload.id) })
         .then(user => {
-          // check for user
           if (user) {
             return done(null, user);
           }

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { loginUser, activateUser } from "../../actions/authActions";
 import TextFieldGroup from "../common/TextFieldGroup";
 import { Link } from "react-router-dom";
-import queryString from "query-string"; // for parsing req.query for backend
+import queryString from "query-string";
 import Alert from "../common/Alert";
 
 class Login extends Component {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import TestAreaFieldGroup from "../common/TextAreaFieldGroup";
+import TextAreaFieldGroup from "../common/TextAreaFieldGroup";
 import { addPost } from "../../actions/postActions";
 
 class PostForm extends Component {
@@ -16,9 +16,16 @@ class PostForm extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.errors) {
-      this.setState({ errors: newProps.errors });
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.errors &&
+      nextProps.errors.response &&
+      nextProps.errors.response.data &&
+      Object.keys(nextProps.errors.response.data).length
+    ) {
+      this.setState({
+        errors: nextProps.errors.response.data
+      });
     }
   }
 
@@ -51,7 +58,7 @@ class PostForm extends Component {
           <div className="card-body">
             <form onSubmit={this.onSubmit} id="post">
               <div className="form-group">
-                <TestAreaFieldGroup
+                <TextAreaFieldGroup
                   placeholder="Create a post"
                   name="text"
                   value={this.state.text}
@@ -61,7 +68,7 @@ class PostForm extends Component {
               </div>
 
               <button type="submit" className="btn btn-dark" form="post">
-                Submit
+                Submit Post
               </button>
             </form>
           </div>

@@ -5,10 +5,183 @@ const ObjectId = require("mongodb").ObjectID;
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
+var nodemailer = require("nodemailer");
+const keys = require("../../config/keys");
 
 // Load validation
 const validateProfileInput = require("../../validation/profile");
+
+// @route   POST api/profile/like/:id
+// @desc    Like profile
+// @access  Private
+router.post(
+  "/like/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Get remove index
+    db.collection("users")
+      .findOne({ _id: ObjectId(req.user._id) })
+      .then(profile => {
+        db.collection("users")
+          .findOne({ _id: ObjectId(req.params.id) })
+          .then(profile => {
+            // Check to see if user already liked the profile
+            if (
+              profile.likes &&
+              profile.likes.filter(
+                like => like.user.toString() === req.user._id.toString()
+              ).length > 0
+            ) {
+              return res.status(400).json({
+                alreadyliked: "You already liked this profile",
+                profileId: req.params.id
+              });
+            }
+            // Add user id to likes array
+            db.collection("users")
+              .updateOne(
+                { _id: ObjectId(req.params.id) },
+                {
+                  $push: {
+                    likes: {
+                      _id: new ObjectId(),
+                      user: ObjectId(req.user._id),
+                      avatar: req.user.avatar,
+                      username: req.user.username
+                    }
+                  },
+                  $inc: { fame: 10 }
+                }
+              )
+              .then(profile => res.json(profile));
+
+            var transporter = nodemailer.createTransport({
+              service: "gmail",
+              auth: {
+                user: keys.mailerUser,
+                pass: keys.mailerPass
+              }
+            });
+            var mailOptions = {
+              from: "Matcha <donotreply@matcha.com>",
+              to: profile.email,
+              subject: "Your profile has been liked",
+              text:
+                "Hello " +
+                profile.name +
+                "!\n" +
+                "Your profile has just been liked by " +
+                req.user.name +
+                "\n- Matcha team.  "
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                res.json({
+                  fail: "Something went wrong :( Please try again"
+                });
+                return;
+              } else if (info.response) {
+                console.log("Email sent: " + info.response);
+                db.collection("users")
+                  .insertOne(newUser)
+                  .then(
+                    res.json({
+                      success:
+                        "Success! Please check your email for account activation link."
+                    })
+                  )
+                  .catch(err => console.log(err));
+              }
+            });
+          })
+          .catch(err => console.log(err));
+      });
+  }
+);
+
+// @route   POST api/profiles/unlike/:id
+// @desc    Unlike profile
+// @access  Private
+router.post(
+  "/unlike/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // Get remove index
+    db.collection("users")
+      .findOne({ _id: ObjectId(req.user._id) })
+      .then(profile => {
+        db.collection("users")
+          .findOne({ _id: ObjectId(req.params.id) })
+          .then(profile => {
+            // Check to see if user already liked the profile
+            if (
+              profile.likes &&
+              profile.likes.filter(
+                like => like.user.toString() === req.user._id.toString()
+              ).length === 0
+            ) {
+              return res.status(400).json({
+                notliked: "You have not liked this profile yet",
+                profileId: req.params.id
+              });
+            }
+            // Get remove index
+            db.collection("users")
+              .updateOne(
+                { "likes.user": ObjectId(req.user._id) },
+                {
+                  $pull: {
+                    likes: { user: ObjectId(req.user._id) }
+                  },
+                  $inc: { fame: -10 }
+                }
+              )
+              .then(profile => res.json(profile));
+            var transporter = nodemailer.createTransport({
+              service: "gmail",
+              auth: {
+                user: keys.mailerUser,
+                pass: keys.mailerPass
+              }
+            });
+            var mailOptions = {
+              from: "Matcha <donotreply@matcha.com>",
+              to: profile.email,
+              subject: "Your profile has been unliked",
+              text:
+                "Hello " +
+                profile.name +
+                "!\n" +
+                "Your profile has just been unliked by " +
+                req.user.name +
+                "\n- Matcha team.  "
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                res.json({
+                  fail: "Something went wrong :( Please try again"
+                });
+                return;
+              } else if (info.response) {
+                console.log("Email sent: " + info.response);
+                db.collection("users")
+                  .insertOne(newUser)
+                  .then(
+                    res.json({
+                      success:
+                        "Success! Please check your email for account activation link."
+                    })
+                  )
+                  .catch(err => console.log(err));
+              }
+            });
+          })
+          .catch(err =>
+            res.status(404).json({ noprofilefound: "No profile found" })
+          );
+      });
+  }
+);
 
 // @route   GET api/profile
 // @desc    Get current user profile
@@ -42,23 +215,40 @@ router.get(
 // @access  Public
 router.get("/all", (req, res) => {
   const filter = JSON.parse(req.query.filter);
+  if (filter && filter.tags && filter.tags.length) {
+    for (var i = 0; i < filter.tags.length; i++) {
+      filter.tags[i] = "#" + filter.tags[i];
+    }
+  }
+  if (filter && filter.tag !== "") {
+    filter.tags.push("#" + filter.tag);
+  }
   const errors = {};
-  console.log(filter)
   db.collection("users")
     .find(
       {
-        location: !filter || filter.location === "" ? { $not: /""/ } : filter.location, 
-        age: { $gte: filter && filter.ageFrom ? filter.ageFrom : 18, $lte: filter && filter.ageTo ? filter.ageTo : 100},
-        fame: { $gte: filter && filter.fameFrom ? filter.fameFrom : 1, $lte: filter && filter.fameTo ? filter.fameTo : 100},
-
+        location:
+          !filter || filter.location === "" ? { $not: /""/ } : filter.location,
+        age: {
+          $gte: filter && filter.ageFrom ? filter.ageFrom : 18,
+          $lte: filter && filter.ageTo ? filter.ageTo : 100
+        },
+        fame: {
+          $gte: filter && filter.fameFrom ? filter.fameFrom : 1,
+          $lte: filter && filter.fameTo ? filter.fameTo : 1000000
+        },
+        interests: {
+          $in:
+            filter && filter.tags && filter.tags.length
+              ? filter.tags
+              : [/(.*?)/]
+        }
       },
       { fields: { password: 0, isVerified: 0, verificationCode: 0 } }
     )
     .toArray((err, profiles) => {
       if (err || profiles.length) {
         errors.profiles = "There are no profiles";
-        // console.log(profiles);
-        // console.log(err);
         return res.json(profiles);
       }
       res.json(profiles);
@@ -93,10 +283,6 @@ router.get("/username/:username", (req, res) => {
 
 router.get("/user/:user_id", (req, res) => {
   const errors = {};
-  // if (!req.params.user_id.match(/^[0-9a-fA-F]{24}$/)) {
-  //   errors.profile = "There is no profile for this user";
-  //   return res.status(404).json(errors);
-  // }
   db.collection("users")
     .findOne(
       {
@@ -125,12 +311,11 @@ router.post(
 
     // Check validation
     if (!isValid) {
-      // return res.status(400).json(errors);
+      return res.status(400).json(errors);
     }
 
     // Get fields
     const profileFields = {};
-    // console.log(req.body);
     profileFields.username = req.body.username;
     profileFields.name = req.body.name;
     profileFields.email = req.body.email;
@@ -147,7 +332,11 @@ router.post(
       req.body.interests.indexOf(",") > -1 &&
       req.body.interests.indexOf("#") > -1
     ) {
-      profileFields.interests = req.body.interests.split(",").trim();
+      profileFields.interests = req.body.interests.split(",");
+      profileFields.interests = profileFields.interests.map(
+        Function.prototype.call,
+        String.prototype.trim
+      );
       profileFields.interests.map(str => {
         if (str.trim().indexOf("#") !== 0)
           errors.interests = "Please use tags with every interest";
@@ -184,7 +373,6 @@ router.post(
         }
 
         if (Object.keys(errors).length > 0 || !isValid) {
-          console.log(errors);
           return res.status(400).json(errors);
         }
 
@@ -256,7 +444,6 @@ router.post(
         errors.format = "Please choose a file";
         return res.status(404).json(errors);
       }
-      console.log(req.file);
       db.collection("users")
         .findOneAndUpdate(
           { _id: ObjectId(req.body.user) },
@@ -294,7 +481,6 @@ router.delete(
         );
         const filePath = `./client/src/user-photos/${req.params.file}`;
         fs.unlinkSync(filePath);
-        console.log(profile.value);
         res.json(profile.value);
       })
       .catch(err => res.status(404).json({ nophotofound: "No photo found" }));
@@ -325,10 +511,50 @@ router.delete(
   }
 );
 
-router.post("/fake",
+router.post(
+  "/fake",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    db.collection("users").findOneAndUpdate({'_id': ObjectId(req.body.name)}, {$inc: {fake: 1}});
+    db.collection("users")
+      .findOne({ _id: ObjectId(req.user._id) })
+      .then(profile => {
+        db.collection("users")
+          .findOne({ _id: ObjectId(req.body.name) })
+          .then(profile => {
+            // Check to see if user already liked the profile
+            if (
+              profile.fake &&
+              profile.fake.filter(
+                fake => fake.user.toString() === req.user._id.toString()
+              ).length > 0
+            ) {
+              return res.status(400).json({
+                alreadyfaked: "You already reported this profile",
+                profileId: req.body.name
+              });
+            }
+            // Add user id to likes array
+            db.collection("users")
+              .updateOne(
+                { _id: ObjectId(req.body.name) },
+                {
+                  $push: {
+                    fake: {
+                      _id: new ObjectId(),
+                      user: ObjectId(req.user._id)
+                    }
+                  }
+                }
+              )
+              .then(profile =>
+                res.status(400).json({
+                  faked: "Thank you for reporting!",
+                  profileId: req.body.name
+                })
+              );
+          })
+          .catch(err => console.log(err));
+      });
   }
 );
 

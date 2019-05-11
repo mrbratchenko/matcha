@@ -44,10 +44,7 @@ MongoClient.connect(url, { useNewUrlParser: true })
   })
   .catch(err => console.log(err));
 
-// Passport
 app.use(passport.initialize());
-
-// Passport Config
 require("./config/passport")(passport);
 
 // Use routes

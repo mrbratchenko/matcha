@@ -6,7 +6,6 @@ module.exports = function validateEmailInput(data) {
 
   data.email = !isEmpty(data.email) ? data.email : "";
 
-  // Email
   if (!isEmail(data.email)) {
     errors.email = "Email is not valid";
   }

@@ -38,8 +38,6 @@ class EditProfile extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("componentWillReceiveProps - done!");
-
     if (Object.keys(nextProps.errors).length) {
       this.setState({
         errors: nextProps.errors
@@ -47,12 +45,10 @@ class EditProfile extends Component {
     } else if (nextProps.profile.profile) {
       const profile = nextProps.profile.profile;
 
-      // Bring interests array back to CSV
       const interestsCSV = !isEmpty(profile.interests)
         ? profile.interests.join(",")
         : "";
 
-      // If profile doesn't exist, make empty string
       profile.location = !isEmpty(profile.location) ? profile.location : "";
       profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
       profile.age = !isEmpty(profile.age) ? profile.age : "";
@@ -84,8 +80,6 @@ class EditProfile extends Component {
       profile.instagram = !isEmpty(profile.social.instagram)
         ? profile.social.instagram
         : "";
-
-      // Set component fields state
 
       this.setState({
         name: profile.name,
@@ -124,6 +118,13 @@ class EditProfile extends Component {
   }
 
   onChange(e) {
+    if (e.target.name === "age" && parseInt(e.target.value) > 100) {
+      e.target.value = "100";
+    }
+    if (e.target.name === "age" && parseInt(e.target.value) < 0) {
+      e.target.value = "0";
+    }
+
     this.setState({
       [e.target.name]: e.target.value
     });
@@ -157,7 +158,6 @@ class EditProfile extends Component {
       );
     }
 
-    // Select options for gender
     const options_gender = [
       { label: "* Select your gender", value: 0 },
       { label: "male", value: "male" },

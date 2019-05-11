@@ -1,6 +1,3 @@
-// rcc - class based component
-// rfc - functional component
-
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -32,13 +29,11 @@ class Navbar extends Component {
     } else if (profile && profile.avatar) {
       avatar = require(`../../user-photos/${profile.avatar}`);
     }
-
-    // console.log(profile);
     const authLinks = (
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
           <Link className="nav-link" to="/feed">
-            Post Feed
+            Posts
           </Link>
         </li>
         <li className="nav-item">

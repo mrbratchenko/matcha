@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); // generate user token
+const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
-const passport = require("passport"); // verify user's token
+const passport = require("passport");
 var nodemailer = require("nodemailer");
-var geoip = require('geoip-lite');
+var geoip = require("geoip-lite");
 
-// Validation
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 const validateEmailInput = require("../../validation/reset-pass");
@@ -46,7 +45,10 @@ router.post("/register", (req, res) => {
         username: req.body.username,
         password: req.body.password,
         isVerified: false,
-        verificationCode: req.body.email
+        verificationCode: req.body.email,
+        // added for filtering purposes
+        fame: Math.floor(Math.random() * 100) + 1,
+        interests: []
       };
 
       bcrypt.hash(newUser.verificationCode, 10, (err, hash) => {
@@ -65,8 +67,8 @@ router.post("/register", (req, res) => {
             }
           });
           var mailOptions = {
-            from: "matches@gmail.com",
-            to: "agent.tony.white@gmail.com", // req.body.email,
+            from: "Matcha <donotreply@matcha.com>",
+            to: req.body.email,
             subject: "Please activate your Matches account",
             text:
               "Hello " +
@@ -81,7 +83,6 @@ router.post("/register", (req, res) => {
           };
           transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-              console.log(error);
               res.json({
                 fail: "Something went wrong :( Please try again"
               });
@@ -127,12 +128,18 @@ router.post("/login", (req, res) => {
         errors.email = "User not found";
         return res.status(400).json(errors);
       }
+
       // check password
       bcrypt.compare(password, user.password).then(match => {
         if (match) {
           if (user && user.isVerified === false) {
             errors.verification =
               "This account has not been confirmed. Please check your email.";
+            return res.status(400).json(errors);
+          }
+          if (user && user.fake > 5) {
+            errors.email =
+              "Your profile has been blacklisted. Please contact the Matcha team.";
             return res.status(400).json(errors);
           }
           // user matched
@@ -151,11 +158,16 @@ router.post("/login", (req, res) => {
           });
           var ip = "178.214.196.34";
           var geo = geoip.lookup(ip);
-          db.collection("users")
-            .findOneAndUpdate(
-              {_id: user._id},
-              {$set: {country: geo.country, coordinate: geo.ll, location: geo.city}}
-              )
+          db.collection("users").findOneAndUpdate(
+            { _id: user._id },
+            {
+              $set: {
+                country: geo.country,
+                coordinate: geo.ll,
+                location: geo.city
+              }
+            }
+          );
         } else {
           errors.password = "Password incorrect";
           return res.status(400).json(errors);
@@ -183,7 +195,6 @@ router.post("/activation", (req, res) => {
         notice.warning = "This account has already been activated.";
         return res.status(200).json(notice);
       } else if (user && user.isVerified === false) {
-        console.log(user);
         db.collection("users")
           .findOneAndUpdate({ email: email }, { $set: { isVerified: true } })
           .then(user => console.log(user));
@@ -201,7 +212,6 @@ router.post("/activation", (req, res) => {
 // @desc    Send email to reset user's password
 // @access  Public
 router.post("/reset-password", (req, res) => {
-  console.log(req.body);
   const { errors, isValid } = validateEmailInput(req.body);
 
   const notice = {};
@@ -229,8 +239,8 @@ router.post("/reset-password", (req, res) => {
         }
       });
       var mailOptions = {
-        from: "matches@gmail.com",
-        to: "agent.tony.white@gmail.com", // req.body.email,
+        from: "Matcha <donotreply@matcha.com>",
+        to: req.body.email,
         subject: "Your password reset link",
         text:
           "Hello " +
@@ -261,10 +271,8 @@ router.post("/reset-password", (req, res) => {
 // @desc    Activate user's account with email code
 // @access  Public
 router.post("/change-password", (req, res) => {
-  // console.log(code);
   const { errors, isValid } = validatePassInput(req.body);
   const initCodeCheck = req.body.initCodeCheck;
-  console.log(initCodeCheck);
 
   if (!isValid && !initCodeCheck) {
     return res.status(400).json(errors);
@@ -286,7 +294,6 @@ router.post("/change-password", (req, res) => {
       ]
     })
     .then(user => {
-      console.log(user);
       if (user) {
         //change user pass
         bcrypt.hash(newPassword, 10, (err, hash) => {
@@ -340,7 +347,6 @@ router.post(
   "/avatar/:file",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
-    console.log(req.user);
     // Get remove index
     db.collection("users")
       .findOneAndUpdate(

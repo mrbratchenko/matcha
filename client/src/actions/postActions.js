@@ -23,7 +23,7 @@ export const addPost = postData => dispatch => {
       }).then(
         dispatch({
           type: SET_NOTICE,
-          payload: "sdfasdfd"
+          payload: res.data
         })
       )
     )

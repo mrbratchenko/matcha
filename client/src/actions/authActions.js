@@ -53,7 +53,6 @@ export const activateUser = userData => dispatch => {
 
 // Reset password
 export const resetPass = (userData, history) => dispatch => {
-  // console.log(userData);
   dispatch(clearNotice());
   dispatch(clearErrors());
   dispatch(setNoticeLoading());
